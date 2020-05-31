@@ -1,0 +1,48 @@
+version: "3.8"
+services:
+  frontend:
+    build:
+      context: ./frontend
+      target: PROD
+    env_file: ./.env.prod
+    environment:
+      NODE_ENV: production
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    entrypoint: yarn build
+  backend:
+    depends_on:
+      - frontend
+    build:
+      context: ./backend
+      target: PROD
+    env_file: ./.env.prod
+    environment:
+      NODE_ENV: production
+    working_dir: /app
+    volumes:
+      - ./backend/src:/app
+      - ./frontend/dist:/app/static
+    entrypoint: bash /app/entrypoint.sh
+  api:
+    build:
+      context: ./api
+      target: PROD
+    env_file: ./.env.prod
+    environment:
+      NODE_ENV: production
+    working_dir: /app
+    volumes:
+      - /run/docker.sock:/run/docker.sock
+      - ./api/src:/app
+      - /tmp/app:/tmp/app
+      - ./images:/app/images
+    entrypoint: bash /app/entrypoint.sh
+  proxy:
+    build: ./proxy
+    ports:
+      - 20102:80
+    depends_on:
+      - backend
+      - api

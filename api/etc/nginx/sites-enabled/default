@@ -1,0 +1,19 @@
+server {
+    listen 80 default_server;
+    access_log /var/log/nginx/access.log;
+
+    root /app;
+    server_name _;
+
+    location / {
+        try_files $uri @responder;
+    }
+
+    location @responder {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_redirect off;
+
+        proxy_pass http://127.0.0.1:6000;
+    }
+}
