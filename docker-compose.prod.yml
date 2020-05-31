@@ -42,7 +42,7 @@ services:
   proxy:
     build: ./proxy
     ports:
-      - 20102:80
+      - 9999:80
     depends_on:
       - backend
       - api
