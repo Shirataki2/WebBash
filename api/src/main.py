@@ -71,10 +71,10 @@ async def run(req: responder.Request, resp: responder.Response):
         resp.status_code = 405
     else:
         src = await req.media()
-        print(src)
         if not {'image', 'filename', 'code', 'command'}.issubset(set(src.keys())):
             resp.status_code = 400
             return
+        src["image"] = "theoldmoon0602/shellgeibot:latest"
         container_list = docker_client.containers.list(
             filters={'ancestor': src['image']}
         )
@@ -97,7 +97,7 @@ async def run(req: responder.Request, resp: responder.Response):
                     f.write(bin_data)
                 file_i += 1
         container = docker_client.containers.run(
-            src['image'],
+            "theoldmoon0602/shellgeibot:latest",
             command=f"bash",
             stdout=False,
             stderr=False,

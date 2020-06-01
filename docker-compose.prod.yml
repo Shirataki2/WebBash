@@ -12,8 +12,6 @@ services:
       - ./frontend:/app
     entrypoint: yarn build
   backend:
-    depends_on:
-      - frontend
     build:
       context: ./backend
       target: PROD
@@ -37,7 +35,6 @@ services:
       - /run/docker.sock:/run/docker.sock
       - ./api/src:/app
       - /tmp/app:/tmp/app
-      - ./images:/app/images
     entrypoint: bash /app/entrypoint.sh
   proxy:
     build: ./proxy
