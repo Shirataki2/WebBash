@@ -2,6 +2,6 @@ module.exports = {
   publicPath: "/static/",
   transpileDependencies: ["vuetify"],
   devServer: {
-    proxy: "http://backend",
+    proxy: "http://proxy",
   },
 };

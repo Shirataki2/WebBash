@@ -1,3 +1,5 @@
 responder
 docker
 pycryptodome
+elasticsearch
+elasticsearch[async]

@@ -49,21 +49,24 @@ async def run(req: responder.Request, resp: responder.Response):
         resp.status_code = 405
     else:
         data = await req.media(format='files')
+        print('*' * 8 + '[CODE START]' + '*' * 8)
+        print(data['source'].decode('utf-8', 'ignore'))
+        print('*' * 8 + ' [CODE END] ' + '*' * 8)
         src = {
             "code": data['source'],
             "files": json.dumps(data, cls=BytesJSONEncoder),
             "image": "theoldmoon0602/shellgeibot:latest",
             "filename": "Main.sh",
-            "command": "bash Main.sh",
+            "command": "./Main.sh",
         }
         async with aiohttp.ClientSession() as sess:
             async with sess.post(f'http://api/run_code', data=src) as response:
                 data = await response.json()
                 resp.status_code = response.status
-        data['images'] = list(
-            map(lambda path: host_prefix + path, data['images'])
-        )
-        print(data)
+        if response.status == 200:
+            data['images'] = list(
+                map(lambda path: host_prefix + path, data['images'])
+            )
         resp.content = json.dumps(data, ensure_ascii=False)
 
 

@@ -14,10 +14,15 @@ import docker
 from docker import types
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
+try:
+    import db
+except:
+    from . import db
 
 
 api = responder.API()
 docker_client = docker.from_env()
+es_code_client = db.SourceController()
 CONTENTTYPES = {
     'plain': 'text/plain',
     'csv': 'text/csv',
@@ -74,6 +79,7 @@ async def run(req: responder.Request, resp: responder.Response):
         if not {'image', 'filename', 'code', 'command'}.issubset(set(src.keys())):
             resp.status_code = 400
             return
+        # temp
         src["image"] = "theoldmoon0602/shellgeibot:latest"
         container_list = docker_client.containers.list(
             filters={'ancestor': src['image']}
@@ -130,7 +136,8 @@ async def run(req: responder.Request, resp: responder.Response):
             start = perf_counter()
             (exit_code, (stdout, stderr)) = container.exec_run(
                 # rm -rf /tmp/app/{run_id}
-                cmd=f"timeout 20s bash -c \"{src['command']}\"",
+                # cmd=f"bash -c \"chmod 700 {src['filename']}; timeout 20s {src['command']}\"",
+                cmd=f"bash -c \"chmod 700 Main.sh; timeout 20s ./Main.sh\"",
                 workdir=f'/tmp/app/{run_id}',
                 demux=True
             )
@@ -170,6 +177,77 @@ async def run(req: responder.Request, resp: responder.Response):
                 workdir=f'/tmp/app'
             )
             container.kill()
+
+
+@api.route("/posts")
+async def register(req: responder.Request, resp: responder.Response):
+    if not req.method in ['post', 'put']:
+        resp.status_code = 405
+    elif req.method == 'post':
+        src = await req.media()
+        if not {'author', 'description', 'main'}.issubset(set(src.keys())):
+            resp.status_code = 400
+            return
+        code = db.Source(src['author'], src['description'], src['main'])
+        code.register(es_code_client)
+        resp.status_code = 200
+    elif req.method == 'put':
+        src = await req.media()
+        if not {'id'}.issubset(set(src.keys())):
+            resp.status_code = 400
+            return
+        _id = src['id']
+        del src['id']
+        es_code_client.update_by_id(_id, src)
+        resp.status_code = 200
+
+
+@api.route("/search")
+async def search(req: responder.Request, resp: responder.Response):
+    if req.method != 'get':
+        resp.status_code = 405
+    else:
+        params = req.params
+        def get_or_none(col): return params[col] if col in params else None
+
+        def get_or_default(
+            col, default): return params[col] if col in params else default
+        author = get_or_none('author')
+        description = get_or_none('description')
+        main = get_or_none('main')
+        offset = get_or_default('offset', 0)
+        limit = get_or_default('limit', 10)
+        order = get_or_default('order', 'desc')
+        key = get_or_default('key', '_score')
+        query = {}
+        query['query'] = {}
+        query['query']['bool'] = {}
+        query['query']['bool']['must'] = []
+        if author:
+            query['query']['bool']['must'].append(
+                {"match": {"author": author}})
+        if description:
+            query['query']['bool']['must'].append(
+                {"match": {"description": description}})
+        if main:
+            query['query']['bool']['must'].append(
+                {"match": {"main": main}})
+        if author is None and description is None and main is None:
+            query['query'] = {"match_all": {}}
+        query['sort'] = {
+            key: {
+                "order": order
+            }
+        }
+        query['from'] = offset
+        query['size'] = limit
+        num, resp_json = es_code_client.fetch_by_query(query)
+        resp.status_code = 200
+        resp.mimetype = 'application/json'
+        resp.headers = {"Content-Type": "application/json; charset=utf-8"}
+        resp.content = json.dumps(
+            {"num": num, "content": resp_json}, ensure_ascii=False, cls=db.Source.SerializeEncoder())
+
 
 if __name__ == "__main__":
     api.run(port=32000, address="0.0.0.0", debug=True)

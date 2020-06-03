@@ -43,3 +43,67 @@ services:
     depends_on:
       - backend
       - api
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.2.0
+    volumes:
+      - ./elastic/kibana.dev.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - 5601:5601
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+    entrypoint: >
+      bash -c "chmod +x /tmp/install-plugin.sh &&
+               /tmp/install-plugin.sh analysis-kuromoji &&
+               /tmp/install-plugin.sh analysis-icu &&
+               docker-entrypoint.sh"
+    container_name: es01
+    environment:
+      - node.name=es01
+      - discovery.seed_hosts=es02
+      - cluster.initial_master_nodes=es01,es02
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - ./elastic/install-plugin.sh:/tmp/install-plugin.sh
+      - ./elastic/esdata01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+  es02:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+    entrypoint: >
+      bash -c "chmod +x /tmp/install-plugin.sh &&
+               /tmp/install-plugin.sh analysis-kuromoji &&
+               /tmp/install-plugin.sh analysis-icu &&
+               docker-entrypoint.sh"
+    container_name: es02
+    environment:
+      - node.name=es02
+      - discovery.seed_hosts=es01
+      - cluster.initial_master_nodes=es01,es02
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - ./elastic/install-plugin.sh:/tmp/install-plugin.sh
+      - ./elastic/esdata02:/usr/share/elasticsearch/data
+
+volumes:
+  esdata01:
+    driver: local
+  esdata02:
+    driver: local
