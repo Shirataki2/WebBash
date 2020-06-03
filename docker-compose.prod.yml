@@ -23,6 +23,7 @@ services:
       - ./backend/src:/app
       - ./frontend/dist:/app/static
     entrypoint: bash /app/entrypoint.sh
+    restart: on-failure
   api:
     build:
       context: ./api
@@ -105,46 +106,6 @@ services:
     volumes:
       - ./elastic/install-plugin.sh:/tmp/install-plugin.sh
       - ./elastic/esdata02:/usr/share/elasticsearch/data
-  zabbix-agent:
-    image: monitoringartist/dockbix-agent-xxl-limited:latest
-    hostname: zabbix-agent
-    env_file:
-      - ./.env.prod
-      - ./.env.prod.secret
-    environment:
-      ZA_Server: 0.0.0.0/0
-      ZA_ServerActive: zabbix-server
-    volumes:
-      - /:/rootfs
-      - /var/run:/var/run
-    restart: always
-  zabbix-db:
-    image: monitoringartist/zabbix-db-mariadb
-    env_file:
-      - ./.env.prod
-      - ./.env.prod.secret
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ./healthchecker/zabbix-db-data:/var/lib/mysql
-    restart: always
-  zabbix-server:
-    image: monitoringartist/dockbix-xxl:latest
-    env_file:
-      - ./.env.prod
-      - ./.env.prod.secret
-    environment:
-      ZS_DBHost: zabbix-db
-      #XXL_zapix: 'true'
-      #XXL_grapher: 'true'
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ./healthchecker/zabbix-server/alertscripts:/usr/local/share/zabbix/alertscripts
-    ports:
-      - 38080:80
-    restart: always
-    depends_on:
-      - zabbix-db
-      - zabbix-agent
 
 volumes:
   esdata01:

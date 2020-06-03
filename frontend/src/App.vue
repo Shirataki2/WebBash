@@ -28,7 +28,7 @@
         </template>
         <v-card>
           <v-card-title>
-            <span class="headline">Search</span>
+            <span class="headline">Search (Beta)</span>
             <v-spacer />
             <v-btn
               icon
@@ -100,7 +100,6 @@
             <v-row class="mt-4">
               <v-col
                 cols="12"
-                md="6"
                 v-if="searchResult.length > 0"
               >
                 <v-card
@@ -569,7 +568,7 @@ class App extends Vue {
     { label: "閲覧数順", value: { key: "views", order: "desc" } },
     { label: "Upvote数順", value: { key: "votes", order: "desc" } }
   ];
-  selectedSort = { label: "関連度順", value: { key: "_score", order: "desc" } };
+  selectedSort = { label: "最新順", value: { key: "post_at", order: "desc" } };
 
   get disabled() {
     return this.code === "";
