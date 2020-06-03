@@ -110,7 +110,7 @@
                   outlined
                 >
                   <v-card-text
-                    style="font-size:1.1em;cursor: pointer;"
+                    style="font-size:1.1em;cursor: pointer;white-space: pre-wrap;word-wrap:break-word;"
                     class="pb-10"
                   >{{ item.description }}</v-card-text>
                   <v-divider />
@@ -146,7 +146,7 @@
           <v-card-text>
             <p
               class="ma-4"
-              style="font-size: 1.3em"
+              style="font-size: 1.3em;white-space: pre-wrap;word-wrap:break-word;"
             >{{ selectedPost ? selectedPost.description : '' }}</p>
             <p
               class="ma-4"
