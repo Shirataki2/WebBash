@@ -14,8 +14,8 @@ import docker
 from docker import types
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
-import access_limiter
 try:
+    import access_limiter
     import db
 except:
     from . import db
