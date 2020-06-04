@@ -23,6 +23,7 @@ services:
       - ./backend/src:/app
       - ./frontend/dist:/app/static
     entrypoint: bash /app/entrypoint.sh
+    restart: on-failure
   api:
     build:
       context: ./api
@@ -46,16 +47,20 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:7.2.0
     volumes:
-      - ./elastic/kibana.dev.yml:/usr/share/kibana/config/kibana.yml
+      - ./elastic/kibana.prod.yml:/usr/share/kibana/config/kibana.yml
+      - ./elastic/install-plugin-kibana.sh:/tmp/install-plugin.sh
     ports:
       - 5601:5601
+    entrypoint: >
+      bash -c "chmod +x /tmp/install-plugin.sh &&
+               /usr/local/bin/kibana-docker"
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
     entrypoint: >
       bash -c "chmod +x /tmp/install-plugin.sh &&
-               /tmp/install-plugin.sh analysis-kuromoji &&
-               /tmp/install-plugin.sh analysis-icu &&
-               docker-entrypoint.sh"
+             /tmp/install-plugin.sh analysis-kuromoji &&
+             /tmp/install-plugin.sh analysis-icu &&
+             docker-entrypoint.sh"
     container_name: es01
     environment:
       - node.name=es01
