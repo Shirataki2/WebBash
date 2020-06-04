@@ -89,6 +89,7 @@ class Limiter:
                     params['unavail_count'] += 1
                     f = True
                     unavail(req, resp)
+                    return
                 if params['unavail_count'] >= ban_thres:
                     print(f'Ban! {client_ip} - {uri}')
                     params['unban_at'] = datetime.datetime.now() + \
