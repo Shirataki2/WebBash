@@ -39,7 +39,7 @@ class Limiter:
 
     def limit(self, num, sec, uri, ban_thres=7, permban_thres=3, ban_duration=datetime.timedelta(days=7)):
         def _middle(func):
-            def _inside(req, resp, **kwargs):
+            async def _inside(req, resp, **kwargs):
                 try:
                     client_ip = dict(req.headers)['x-forwarded-for']
                 except KeyError:
@@ -73,9 +73,11 @@ class Limiter:
                         'ban_count': 0,
                     })
                 if params['access_at'] < params['unban_at']:
+                    print('Ban! {client_ip} - {uri}')
                     banned(req, resp)
                     return
                 if params['perm_banned']:
+                    print('Perm Ban! {client_ip} - {uri}')
                     banned(req, resp)
                     return
                 end = datetime.datetime.now()
@@ -105,6 +107,6 @@ class Limiter:
                     banned(req, resp)
                 self.history.insert_one(params)
                 if not f:
-                    func(req, resp, **kwargs)
+                    await func(req, resp, **kwargs)
             return _inside
         return _middle

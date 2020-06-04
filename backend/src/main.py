@@ -63,7 +63,7 @@ async def run(req: responder.Request, resp: responder.Response):
             async with sess.post(f'http://api/run_code', data=src) as response:
                 data = await response.json()
                 resp.status_code = response.status
-        if response.status == 200:
+        if response.status == 200 and data['images']:
             data['images'] = list(
                 map(lambda path: host_prefix + path, data['images'])
             )

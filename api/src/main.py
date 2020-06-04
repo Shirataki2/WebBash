@@ -82,7 +82,7 @@ async def image(req: responder.Request, resp: responder.Response, *, path):
 @api.route("/run_code")
 @limiter.limit(3, 1, 'run_short', 1, 1)
 @limiter.limit(10, 10, 'run_middle', 2, 2)
-@limiter.limit(10, 50, 'run_long', 3, 2)
+@limiter.limit(10, 50, 'run_long', 5, 2)
 async def run(req: responder.Request, resp: responder.Response):
     if req.method != 'post':
         resp.status_code = 405
