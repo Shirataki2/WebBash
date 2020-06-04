@@ -3,3 +3,4 @@ docker
 pycryptodome
 elasticsearch
 elasticsearch[async]
+pymongo

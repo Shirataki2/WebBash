@@ -44,10 +44,12 @@ CONTENTTYPES = {
 
 
 @api.route("/ping")
-def ping(req, resp):
-    sleep(1)
+def ping(req: responder.Request, resp: responder.Response):
     status = {
-        "status": "API Server Working"
+        "status": "API Server Working",
+        "header": dict(req.headers),
+        "session": dict(req.session),
+        "cookie": dict(req.cookies)
     }
     resp.headers = {"Content-Type": "application/json; charset=utf-8"}
     resp.content = json.dumps(status, ensure_ascii=False)
