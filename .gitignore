@@ -8,3 +8,4 @@
 /elastic/esdata*
 .env.prod.secret
 /healthchecker
+/mongo_db

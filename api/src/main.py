@@ -14,13 +14,17 @@ import docker
 from docker import types
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
+import access_limiter
 try:
     import db
 except:
     from . import db
+    from . import access_limiter
 
 
 api = responder.API()
+limiter = access_limiter.Limiter(
+    user=os.environ['MONGO_INITDB_ROOT_USERNAME'], passwd=os.environ['MONGO_INITDB_ROOT_PASSWORD'])
 docker_client = docker.from_env()
 es_code_client = db.SourceController()
 CONTENTTYPES = {
@@ -44,6 +48,9 @@ CONTENTTYPES = {
 
 
 @api.route("/ping")
+@limiter.limit(4, 1, 'ping_short', 1, 1)
+@limiter.limit(10, 5, 'ping_middle', 1, 2)
+@limiter.limit(10, 60, 'ping_long', 3, 3)
 def ping(req: responder.Request, resp: responder.Response):
     status = {
         "status": "API Server Working",
@@ -73,6 +80,9 @@ async def image(req: responder.Request, resp: responder.Response, *, path):
 
 
 @api.route("/run_code")
+@limiter.limit(3, 1, 'run_short', 1, 1)
+@limiter.limit(10, 10, 'run_middle', 2, 2)
+@limiter.limit(10, 50, 'run_long', 3, 2)
 async def run(req: responder.Request, resp: responder.Response):
     if req.method != 'post':
         resp.status_code = 405

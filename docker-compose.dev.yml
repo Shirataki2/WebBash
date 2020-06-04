@@ -54,13 +54,13 @@ services:
       - backend
       - api
     volumes:
-      - ./proxy/etc/nginx/conf.d/default:/etc/nginx/conf.d/default
+      - ./proxy/etc/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
   mongo:
     image: mongo
     restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+    env_file: ./.env.dev
+    volumes:
+      - ./mongo_db:/data/db
   kibana:
     image: docker.elastic.co/kibana/kibana:7.2.0
     volumes:
