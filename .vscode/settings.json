@@ -3,5 +3,12 @@
         {
             "mode": "auto"
         }
+    ],
+    "python.autoComplete.extraPaths": [
+        "./api/src/app",
+        "./backend/src/app"
+    ],
+    "python.linting.pylintArgs": [
+        "--enable=W0614"
     ]
 }

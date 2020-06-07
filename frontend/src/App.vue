@@ -504,10 +504,14 @@
         padless
         cols="12"
       >
+        Version 0.9.0 (Last Modified: 2020-06-08)
         &copy; {{ new Date().getFullYear() }} — <strong>FF</strong> (Twitter: <a
           target="_blank"
           href="https://twitter.com/fujifog"
-        >@FF</a>)
+        >@FF</a>) | <a
+          target="_blank"
+          href="/api/docs"
+        >API Documentation</a>
       </v-col>
     </v-footer>
   </v-app>
@@ -629,20 +633,21 @@ class App extends Vue {
       return this.onError("入力画像の処理中にエラーが発生しました");
     }
     formdata.append("source", this.code);
+    console.log(formdata);
     this.history.push(this.code);
     if (this.history.length > 100) {
       this.history = this.history.slice(1);
     }
     localStorage.setItem("code/history", JSON.stringify(this.history));
     try {
-      const { data } = await this.$axios.post("/run", formdata, {
+      const { data } = await this.$axios.post("/api/run", formdata, {
         headers: {
           "content-type": "multipart/form-data"
         }
       });
       this.stdout = data.stdout;
       this.stderr = data.stderr;
-      this.exitCode = `${data.exit_code} (time: ${data.sec}${
+      this.exitCode = `${data.exit_code} (time: ${data.exec_sec}${
         data.exit_code === 124 ? " (timeout)" : ""
       })`;
       this.images = data.images;

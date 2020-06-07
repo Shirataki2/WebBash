@@ -1,6 +1,11 @@
-responder
 docker
-pycryptodome
 elasticsearch
 elasticsearch[async]
 pymongo
+aiofiles
+aiohttp
+uvicorn
+jinja2
+fastapi
+python-multipart
+timeout-decorator
