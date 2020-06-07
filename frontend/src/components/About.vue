@@ -87,7 +87,7 @@
       <li>Docker</li>
       <li>Docker Compose</li>
       <li>Vue.js</li>
-      <li>Responder</li>
+      <li>FastAPI</li>
       <li>Uvicorn</li>
       <li>Nginx</li>
       <li>Elastic Stack</li>
