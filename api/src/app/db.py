@@ -143,6 +143,10 @@ class SourceController:
         return Source.from_hits(self.es.search(body=query, index=self.index_name))
 
     def update_by_id(self, _id, new_data) -> bool:
+        if 'id' in new_data:
+            del new_data['id']
+        if 'pid' in new_data:
+            del new_data['pid']
         return self.es.update(self.index_name, _id, body={"doc": new_data})
 
     def delete_by_id(self, _id) -> bool:

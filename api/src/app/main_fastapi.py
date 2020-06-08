@@ -79,7 +79,7 @@ class ShellgeiSaveRequest(BaseModel):
 
 
 class ShellgeiUpdateRequest(BaseModel):
-    id: str = Body(...)
+    pid: str = Body(...)
     author: Optional[str] = Body(None, max_length=16)
     description: Optional[str] = Body(None, max_length=280)
     main: Optional[str] = Body(None, max_length=4000)
@@ -322,11 +322,11 @@ async def post_code(req: ShellgeiSaveRequest):
 
 @api.put("/posts", status_code=204, include_in_schema=False)
 async def update_code(req: ShellgeiUpdateRequest):
-    _id = req.id
+    print(req.pid, req.dict())
+    post_id = req.pid
     data = req.dict()
-    del data['id']
     try:
-        es_code_client.update_by_id(id, data)
+        es_code_client.update_by_id(post_id, data)
     except elasticsearch.exceptions.NotFoundError as e:
         raise HTTPException(404, 'Post not Found')
 
@@ -337,10 +337,10 @@ async def search(q: SearchQuery = Depends(SearchQuery)):
     Search for source code stored in the database.
     '''
     num, resp = es_code_client.fetch_by_query(q.to_query())
-    return JSONResponse(jsonable_encoder({
+    return {
         "num": num,
         "content": resp
-    }))
+    }
 
 
 def decode(s, line=100, count=3000):
