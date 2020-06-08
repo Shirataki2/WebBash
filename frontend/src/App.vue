@@ -633,7 +633,6 @@ class App extends Vue {
       return this.onError("入力画像の処理中にエラーが発生しました");
     }
     formdata.append("source", this.code);
-    console.log(formdata);
     this.history.push(this.code);
     if (this.history.length > 100) {
       this.history = this.history.slice(1);
@@ -742,7 +741,7 @@ class App extends Vue {
       }
       this.searchResult = [];
       data.forEach((item: any) => {
-        const data = JSON.parse(item);
+        const data = item;
         this.searchResult.push({
           ...data
         });
@@ -757,16 +756,15 @@ class App extends Vue {
     this.selectedPost = post;
     this.searchDetailDialog = true;
     await this.$axios.put("/api/posts", {
-      id: post.id,
+      pid: post._id,
       views: post.views + 1
     });
     this.selectedPost.views += 1;
   }
 
   async onUpvoteClick(post: any) {
-    console.log(post);
     await this.$axios.put("/api/posts", {
-      id: post.id,
+      pid: post._id,
       votes: post.votes + 1
     });
     this.selectedPost.votes += 1;
