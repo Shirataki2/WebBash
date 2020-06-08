@@ -9,3 +9,4 @@ jinja2
 fastapi
 python-multipart
 timeout-decorator
+pytest
