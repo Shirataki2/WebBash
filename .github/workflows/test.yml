@@ -1,7 +1,7 @@
 name: Test on Merge
 on:
   pull_request:
-    types: [opened]
+    types: [opened, reopened, synchronize]
 jobs:
   test:
     runs-on: ubuntu-latest
