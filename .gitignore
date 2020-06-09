@@ -9,4 +9,3 @@
 .env.prod.secret
 /healthchecker
 /mongo_db
-/backend_
