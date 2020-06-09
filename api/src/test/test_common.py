@@ -23,7 +23,7 @@ def test_run_return_422_without_source():
 def test_run_ls():
     resp = client.post('/run', {
         'source': 'ls',
-    })
+    }, headers={"X-Forwarded-For": "192.168.0.5"})
     assert resp.status_code == 200
     assert 'stdout' in resp.json().keys()
     assert resp.json()['stdout'] == 'Main.sh\n'

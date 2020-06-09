@@ -1,0 +1,29 @@
+name: Test on Merge
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: develop
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: SCP Files
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          source: "."
+          target: ${{ secrets.TEST_TARGET }}
+          use_insecure_cipher: true
+      - name: SSH Test
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: ${{ secrets.TEST_SCRIPT }}
+          use_insecure_cipher: true
