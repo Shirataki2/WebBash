@@ -24,7 +24,7 @@ function finally {
 
 echo '[*] Test Start'
 # ADD TEST SCRIPT HERE
-docker-compose -f docker-compose.test.yml exec -T api pytest
+docker-compose -f docker-compose.test.yml exec api bash -c 'pytest'
 echo '[*] Test Completed!'
 
 exit 0
