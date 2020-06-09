@@ -7,15 +7,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+      - name: Update Docker Compose
+        run: sudo curl -L "https://github.com/docker/compose/releases/download/1.11.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose-3
+      - name: CHMOD Docker Compose
+        run: sudo chmod 777 /usr/local/bin/docker-compose-3
       - name: Build Docker Images
-        run: docker-compose -f docker-compose.prod.yml build
+        run: docker-compose-3 -f docker-compose.prod.yml build
       - name: Build Frontend
-        run: docker-compose -f docker-compose.prod.yml run --entrypoint "bash -c 'yarn install --production=false && yarn build'" frontend
+        run: docker-compose-3 -f docker-compose.prod.yml run --entrypoint "bash -c 'yarn install --production=false && yarn build'" frontend
       - name: Run Database
-        run: docker-compose -f docker-compose.prod.yml up -d es01 es02 mongo
+        run: docker-compose-3 -f docker-compose.prod.yml up -d es01 es02 mongo
       - name: OK! Wait 15 seconds
         run: sleep 15
       - name: Run Service
-        run: docker-compose -f docker-compose.prod.yml up -d api proxy
+        run: docker-compose-3 -f docker-compose.prod.yml up -d api proxy
       - name: Run API Test
-        run: docker-compose -f docker-compose.prod.yml exec api pytest
+        run: docker-compose-3 -f docker-compose.prod.yml exec api pytest
