@@ -1,3 +1,4 @@
+#!/bin/bash
 echo '[*] Down Docker Container'
 docker-compose -f docker-compose.test.yml down
 echo '[*] Build Images'
@@ -22,6 +23,8 @@ function finally {
 }
 
 echo '[*] Test Start'
+# ADD TEST SCRIPT HERE
 docker-compose -f docker-compose.test.yml exec -T api pytest
+echo '[*] Test Completed!'
 
 exit 0
