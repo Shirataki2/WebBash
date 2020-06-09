@@ -59,7 +59,6 @@ services:
              /tmp/install-plugin.sh analysis-kuromoji &&
              /tmp/install-plugin.sh analysis-icu &&
              docker-entrypoint.sh"
-    container_name: es01
     environment:
       - node.name=es01
       - discovery.seed_hosts=es02
@@ -86,7 +85,6 @@ services:
                /tmp/install-plugin.sh analysis-kuromoji &&
                /tmp/install-plugin.sh analysis-icu &&
                docker-entrypoint.sh"
-    container_name: es02
     environment:
       - node.name=es02
       - discovery.seed_hosts=es01
