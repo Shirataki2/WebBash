@@ -12,11 +12,7 @@ sleep 15
 echo '[*] Run Services'
 docker-compose -f docker-compose.test.yml up -d api proxy
 set -e
-trap catch ERR
 trap finally EXIT
-function catch {
-    echo '[!] Test Failed'
-}
 function finally {
     echo '[*] Remove Files'
     docker-compose -f docker-compose.test.yml down
