@@ -8,7 +8,7 @@ docker-compose -f docker-compose.test.yml run --entrypoint "bash -c 'yarn instal
 echo '[*] Run Database'
 docker-compose -f docker-compose.test.yml up -d es01 mongo
 echo '[*] Wait for Start Database'
-sleep 15
+sleep 25
 echo '[*] Run Services'
 docker-compose -f docker-compose.test.yml up -d proxy
 set -e
@@ -18,6 +18,8 @@ function finally {
     docker-compose -f docker-compose.test.yml down
 }
 
+echo '[*] ES Log'
+docker-compose -f docker-compose.test.yml logs es01
 echo '[*] Test Start'
 # ADD TEST SCRIPT HERE
 docker-compose -f docker-compose.test.yml run --entrypoint pytest api
