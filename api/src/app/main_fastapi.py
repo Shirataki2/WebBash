@@ -15,11 +15,12 @@ from fastapi import (
 from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.encoders import jsonable_encoder
-from fastapi.openapi.docs import get_redoc_html
+from fastapi.openapi.utils import get_openapi
 from pydantic import BaseModel
 from typing import Optional, List
 from enum import Enum
 from timeout_decorator import timeout, TimeoutError
+from datetime import datetime
 import elasticsearch
 import json
 import shutil
@@ -36,14 +37,37 @@ from time import sleep, perf_counter
 import docker
 from docker import types
 from shutil import rmtree
-from .db import SourceController, Source
+from .es import SourceController, Source
+from .limiter import Limiter
 from .conf import docker_prepare_conf, fastapi_config
 from .decorators import run_container
 
 
 api = FastAPI(**fastapi_config)
+limiter = Limiter(user=os.environ['MONGO_INITDB_ROOT_USERNAME'],
+                  passwd=os.environ['MONGO_INITDB_ROOT_PASSWORD'])
 docker_client = docker.from_env()
 es_code_client = SourceController()
+
+
+def custom_openapi():
+    if api.openapi_schema:
+        return api.openapi_schema
+    openapi_schema = get_openapi(
+        title="Web Bash",
+        version="v 1.0.0",
+        openapi_prefix='/api',
+        description="API for executing shell(gei) scripts",
+        routes=api.routes,
+    )
+    openapi_schema["info"]["x-logo"] = {
+        "url": "https://blog.chomama.jp/wp-content/uploads/2020/06/webbashicon-2.png"
+    }
+    api.openapi_schema = openapi_schema
+    return api.openapi_schema
+
+
+api.openapi = custom_openapi  # type: ignore
 
 
 class SupportedImages(str, Enum):
@@ -59,12 +83,12 @@ class SupportedFilenames(str, Enum):
 
 
 class ShellgeiResponse(BaseModel):
-    stdout: str = Body(None, description='Standard Output')
-    stderr: str = Body(None, description='Standard Error')
+    stdout: str = Body("Hello, World!", description='Standard Output')
+    stderr: str = Body("", description='Standard Error')
     exit_code: str = Body(
-        None, description='Exit code.\n\nIf the command finishes without any errors, it returns `0`.')
+        "0", description='Exit code.\n\nIf the command finishes without any errors, it returns `0`.')
     exec_sec: str = Body(
-        None, description='Execution time.\n\nThe function returns the string, such as `1.234 sec`.')
+        "0.328 sec", description='Execution time.\n\nThe function returns the string, such as `1.234 sec`.')
     images: List[str] = Body([], description=('URL of the image generated during the execution of shell art code.\n\n'
                                               'The images saved in the `/images` folder during the execution of '
                                               'the shell script are automatically sent to the server as It will '
@@ -72,7 +96,8 @@ class ShellgeiResponse(BaseModel):
 
 
 class ShellgeiSaveRequest(BaseModel):
-    author: str = Body(..., description='User Name', max_length=16)
+    author: str = Body(...,
+                       description='User Name', max_length=16)
     description: str = Body(...,
                             description='Details about source code', max_length=280)
     main: str = Body(..., description='Source Code', max_length=4000)
@@ -177,6 +202,21 @@ class SearchQuery:
         return query
 
 
+class PostSchema(BaseModel):
+    _id: str = Body('d9f0ac7f073d', description='Post ID')
+    author: str = Body('Awesome User', description='Post ID')
+    description: str = Body('ls example', description='Source Description')
+    main: str = Body('ls', description='Source')
+    post_at: datetime = Body(datetime.now(), description='Post Time')
+    votes: int = Body(10, description='Upvote Count')
+    views: int = Body(20, description='Views Count')
+
+
+class SearchResponse(BaseModel):
+    num: int = Body(None, description='Example: `1`\n\nNumber of Hit')
+    content: List[PostSchema] = Body(None, description='Hit Posts')
+
+
 class PingResponse(BaseModel):
     status: str = Body("API Server Working", description="Server Status")
 
@@ -185,7 +225,11 @@ class StatusResponse(BaseModel):
     message: str = Body(None, description="HTTP Status Description")
 
 
-@api.get("/ping", response_model=PingResponse, tags=['General'])
+@api.get(
+    "/ping",
+    response_model=PingResponse,
+    tags=['General']
+)
 def ping():
     """
     Returns a simple response ... if the server is alive.
@@ -232,10 +276,16 @@ async def image(path: str = Path(..., description='Image Name such as `029cd08ff
         },
         429: {
             "model": StatusResponse,
-            "description": "Too many requests in short time"
+            "description": "Too many requests in a short time"
         }
     },
-    tags=['Shell Script']
+    tags=['Shell Script'],
+    dependencies=[
+        Depends(limiter.limit('shellgei_10minlimit', 120, '10min', '30min')),
+        Depends(limiter.limit('shellgei_1minlimit', 15, '1min', '90min')),
+        Depends(limiter.limit('shellgei_10seclimit', 5, '10sec', '1days')),
+        Depends(limiter.limit('shellgei_1seclimit', 3, '1sec', '1000000days')),
+    ]
 )
 async def run(
     background_tasks: BackgroundTasks,
@@ -269,17 +319,27 @@ async def run(
 
         **Execute on the Docker container under the following constraints.**
 
-        **1.** The maximum execution time is 20 seconds.
+        1. The maximum execution time is 20 seconds.
 
-        **2.** The output file size limit is 5MB.
+        2. The output file size limit is 5MB.
 
-        **3.** The number of available processes is 128.
+        3. The number of available processes is 128.
 
-        **4.** Network connection is not available.
+        4. Network connection is not available.
 
-        **5.** The available memory is 256MB and the swap memory is 256MB.
+        5. The available memory is 256MB and the swap memory is 256MB.
 
-        **6.** The number of characters that can be output is 3000, and the number of lines is 100.
+        6. The number of characters that can be output is 3000, and the number of lines is 100.
+
+        __If you make a large number of requests in a very short time, the application rejects the requests for a certain period of time.__
+
+        1. Over 120 requests in 10 minutes: 30-minute ban
+
+        2. Over 15 requests in 1 minutes: 90-minute ban
+
+        3. Over 5 requests in 10 seconds: 7-day ban
+
+        4. Over 3 requests in 1 seconds: 1 million hrs ban.
     '''
     print(filename.value, image.value, command.value)
     container_list = docker_client.containers.list(
@@ -331,7 +391,7 @@ async def update_code(req: ShellgeiUpdateRequest):
         raise HTTPException(404, 'Post not Found')
 
 
-@api.get("/search", tags=['Shell Script'])
+@api.get("/search", response_model=SearchResponse, tags=['Shell Script'])
 async def search(q: SearchQuery = Depends(SearchQuery)):
     '''
     Search for source code stored in the database.

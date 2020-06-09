@@ -504,7 +504,7 @@
         padless
         cols="12"
       >
-        Version 0.9.0 (Last Modified: 2020-06-08)
+        Version 1.0.0 |
         &copy; {{ new Date().getFullYear() }} — <strong>FF</strong> (Twitter: <a
           target="_blank"
           href="https://twitter.com/fujifog"

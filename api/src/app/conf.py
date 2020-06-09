@@ -27,8 +27,6 @@ docker_prepare_conf = {
 
 fastapi_config: Mapping = {
     'title': 'WebBash API',
-    'version': '0.9.0',
-    'description': 'API for executing shell(gei) scripts',
     'openapi_prefix': '/api/',
     'openapi_url': "/openapi.json",
     'docs_url': None,

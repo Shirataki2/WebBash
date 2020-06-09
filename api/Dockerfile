@@ -6,8 +6,8 @@ COPY etc/nginx/sites-enabled/* /etc/nginx/sites-enabled
 RUN apt install curl && \
     curl -fsSL get.docker.com -o get-docker.sh && \
     sh get-docker.sh
-COPY src/ /app
-WORKDIR /app
+COPY src/ /src
+WORKDIR /src
 RUN pip install -r requirements.txt
 
 FROM python:3.8 as PROD
@@ -18,6 +18,6 @@ COPY etc/nginx/sites-enabled/* /etc/nginx/sites-enabled
 RUN apt install curl && \
     curl -fsSL get.docker.com -o get-docker.sh && \
     sh get-docker.sh
-COPY src/ /app
-WORKDIR /app
+COPY src/ /src
+WORKDIR /src
 RUN pip install -r requirements.txt

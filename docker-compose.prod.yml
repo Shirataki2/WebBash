@@ -20,7 +20,7 @@ services:
       - ./.env.prod.secret
     environment:
       NODE_ENV: production
-    working_dir: /app
+    working_dir: /src
     volumes:
       - /run/docker.sock:/run/docker.sock
       - ./api/etc/nginx/sites-enabled/default:/etc/nginx/sites-enabled/default
