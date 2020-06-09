@@ -1,8 +1,9 @@
 name: Deploy
 on:
-  release:
-    types:
-      - published
+  push:
+    branches:
+    - master
+    - release/*
 jobs:
   deploy:
     runs-on: centos7-latest
