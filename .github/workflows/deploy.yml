@@ -12,7 +12,6 @@ jobs:
         uses: shimataro/ssh-key-action@v1
         with:
           private-key: ${{ secrets.SSH_KEY }} # 必須
-          public-key: ${{ secrets.SSH_KEY_PUBLIC }} # 必須
           name: id_rsa
           known-hosts: ${{ secrets.KNOWN_HOSTS }}
       - name: SCP Files
