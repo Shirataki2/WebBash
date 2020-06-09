@@ -58,10 +58,8 @@ services:
              /tmp/install-plugin.sh analysis-kuromoji &&
              /tmp/install-plugin.sh analysis-icu &&
              docker-entrypoint.sh"
-    container_name: es01
     environment:
-      - node.name=es01
-      - cluster.initial_master_nodes=es01
+      - discovery.type=single-node
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
