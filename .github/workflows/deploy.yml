@@ -8,13 +8,21 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v1
-        with:
-          private-key: ${{ secrets.SSH_KEY }} # 必須
-          name: id_rsa
-          known-hosts: ${{ secrets.KNOWN_HOSTS }}
+      - uses: actions/checkout@master
       - name: SCP Files
-        run: scp -P 222 -r . root@ik1-420-42243.vs.sakura.ne.jp:/root/deploy/
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          source: "."
+          target: "/root/deploy"
       - name: SSH Deploy
-        run: ssh root@ik1-420-42243.vs.sakura.ne.jp -p 222 "bash /root/deploy/restart.prod.sh"
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: "bash -c 'cd /root/deploy && sh restart.prod.sh'"
