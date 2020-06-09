@@ -25,5 +25,5 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
-          script: ${{ secrets.TEST_SCRIPT }}
+          script: ${{ secrets.TEST_SCRIPT_TMP }}
           use_insecure_cipher: true
