@@ -4,7 +4,6 @@
 /**/*.jpeg
 /**/*.jpg
 *.gif
-/db
 /elastic/esdata*
 .env.prod.secret
 /healthchecker
