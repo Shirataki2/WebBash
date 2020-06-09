@@ -5,6 +5,11 @@ docker-compose -f docker-compose.test.yml up -d es01 es02 mongo
 sleep 20
 docker-compose -f docker-compose.test.yml up -d api proxy
 
+set -e
+
 docker-compose -f docker-compose.test.yml exec -T api pytest
+
+set +e
+
 
 docker-compose -f docker-compose.test.yml down
