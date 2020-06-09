@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v1
       - name: SCP Files
         uses: appleboy/scp-action@master
         with:
