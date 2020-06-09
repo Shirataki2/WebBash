@@ -1,12 +1,12 @@
 #!/bin/bash
 echo '[*] Down Docker Container'
-docker-compose -f docker-compose.test.yml down
+docker-compose -f docker-compose.test.yml down --remove-orphans
 echo '[*] Build Images'
 docker-compose -f docker-compose.test.yml build
 echo '[*] Build Frontend'
 docker-compose -f docker-compose.test.yml run --entrypoint "bash -c 'yarn install --production=false && yarn build'" frontend
 echo '[*] Run Database'
-docker-compose -f docker-compose.test.yml up -d es01 es02 mongo
+docker-compose -f docker-compose.test.yml up -d es01 mongo
 echo '[*] Wait for Start Database'
 sleep 15
 echo '[*] Run Services'

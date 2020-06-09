@@ -75,7 +75,7 @@ class Source:
 
 
 class SourceController:
-    def __init__(self, index_name='code_index', hosts=["es01:9200", "es02:9200"], **kwargs):
+    def __init__(self, index_name='code_index', hosts=["es01:9200"], **kwargs):
         self.es = Elasticsearch(hosts=hosts, **kwargs)
         self.index_name = index_name
         self.settings = {
