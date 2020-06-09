@@ -14,10 +14,11 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
+          key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.PORT }}
           source: "."
-          target: "/root/deploy"
+          target: ${{ secrets.TARGET }}
+          use_insecure_cipher: true
       - name: SSH Deploy
         uses: appleboy/ssh-action@master
         with:
@@ -25,4 +26,5 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
-          script: "bash -c 'cd /root/deploy && sh restart.prod.sh'"
+          script: ${{ secrets.DEPLOY_SCRIPT }}
+          use_insecure_cipher: true
