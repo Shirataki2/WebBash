@@ -1,0 +1,18 @@
+name: Deploy
+on:
+  release:
+    types:
+      - published
+jobs:
+  deploy:
+    runs-on: centos7-latest
+    steps:
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v1
+        with:
+          private-key: ${{ secrets.SSH_KEY }} # 必須
+          public-key: ${{ secrets.SSH_KEY_PUBLIC }} # 必須
+          name: id_rsa
+          known-hosts: ${{ secrets.KNOWN_HOSTS }}
+      - name: run deploy script
+        run: bash deploy.sh
