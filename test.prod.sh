@@ -1,15 +1,27 @@
+echo '[*] Down Docker Container'
 docker-compose -f docker-compose.test.yml down
+echo '[*] Build Images'
 docker-compose -f docker-compose.test.yml build
+echo '[*] Build Frontend'
 docker-compose -f docker-compose.test.yml run --entrypoint "bash -c 'yarn install --production=false && yarn build'" frontend
+echo '[*] Run Database'
 docker-compose -f docker-compose.test.yml up -d es01 es02 mongo
-sleep 20
+echo '[*] Wait for Start Database'
+sleep 15
+echo '[*] Run Services'
 docker-compose -f docker-compose.test.yml up -d api proxy
-
 set -e
+trap catch ERR
+trap finally EXIT
+function catch {
+    echo '[!] Test Failed'
+}
+function finally {
+    echo '[*] Remove Files'
+    docker-compose -f docker-compose.test.yml down
+}
 
+echo '[*] Test Start'
 docker-compose -f docker-compose.test.yml exec -T api pytest
 
-set +e
-
-
-docker-compose -f docker-compose.test.yml down
+exit 0
