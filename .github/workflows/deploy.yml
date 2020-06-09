@@ -1,9 +1,7 @@
 name: Deploy To Server
 on:
-  push:
-    branches:
-      - master
-      - release/*
+  release:
+    types: [released]
 jobs:
   deploy:
     runs-on: ubuntu-latest
