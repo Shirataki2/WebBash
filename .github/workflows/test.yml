@@ -1,0 +1,21 @@
+name: Test on Merge
+on:
+  pull_request:
+    types: [opened]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Build Docker Images
+        run: docker-compose -f docker-compose.prod.yml build
+      - name: Build Frontend
+        run: docker-compose -f docker-compose.prod.yml run --entrypoint "bash -c 'yarn install --production=false && yarn build'" frontend
+      - name: Run Database
+        run: docker-compose -f docker-compose.prod.yml up -d es01 es02 mongo
+      - name: OK! Wait 15 seconds
+        run: sleep 15
+      - name: Run Service
+        run: docker-compose -f docker-compose.prod.yml up -d api proxy
+      - name: Run API Test
+        run: docker-compose -f docker-compose.prod.yml exec api pytest
