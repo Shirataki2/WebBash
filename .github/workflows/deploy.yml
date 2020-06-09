@@ -6,7 +6,7 @@ on:
     - release/*
 jobs:
   deploy:
-    runs-on: centos7-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v1
