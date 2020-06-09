@@ -2,11 +2,11 @@ name: Deploy
 on:
   push:
     branches:
-    - master
-    - release/*
+      - master
+      - release/*
 jobs:
   deploy:
-    runs-on: centos7-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v1
@@ -15,5 +15,7 @@ jobs:
           public-key: ${{ secrets.SSH_KEY_PUBLIC }} # 必須
           name: id_rsa
           known-hosts: ${{ secrets.KNOWN_HOSTS }}
-      - name: run deploy script
-        run: bash deploy.sh
+      - name: SCP Files
+        run: scp -P 222 -r . root@ik1-420-42243.vs.sakura.ne.jp:/root/deploy/
+      - name: SSH Deploy
+        run: ssh root@ik1-420-42243.vs.sakura.ne.jp -p 222 "bash /root/deploy/restart.prod.sh"
