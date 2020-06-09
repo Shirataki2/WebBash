@@ -10,7 +10,7 @@ docker-compose -f docker-compose.test.yml up -d es01 mongo
 echo '[*] Wait for Start Database'
 sleep 15
 echo '[*] Run Services'
-docker-compose -f docker-compose.test.yml up -d api proxy
+docker-compose -f docker-compose.test.yml up -d proxy
 set -e
 trap finally EXIT
 function finally {
@@ -20,7 +20,7 @@ function finally {
 
 echo '[*] Test Start'
 # ADD TEST SCRIPT HERE
-docker-compose -f docker-compose.test.yml exec -T api bash -c 'pytest'
+docker-compose -f docker-compose.test.yml run --entrypoint pytest api
 echo '[*] Test Completed!'
 
 exit 0
