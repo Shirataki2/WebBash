@@ -27,6 +27,8 @@ jobs:
           port: ${{ secrets.PORT }}
           script: ${{ secrets.TEST_SCRIPT }}
           use_insecure_cipher: true
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v1
       - name: Copy Coverage Files
         uses: appleboy/ssh-action@master
         with:
