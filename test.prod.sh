@@ -22,7 +22,9 @@ echo '[*] ES Log'
 docker-compose -f docker-compose.test.yml logs es01
 echo '[*] Test Start'
 # ADD TEST SCRIPT HERE
-docker-compose -f docker-compose.test.yml run --entrypoint pytest api
+
+docker-compose -f docker-compose.test.yml run --entrypoint 'pytest -v --cov=app --cov-report xml --cov-report term-missing' api
+
 echo '[*] Test Completed!'
 
 exit 0

@@ -11,3 +11,4 @@ python-multipart
 timeout-decorator
 pytest
 pytimeparse
+pytest-cov

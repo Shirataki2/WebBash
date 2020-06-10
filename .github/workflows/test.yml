@@ -27,3 +27,21 @@ jobs:
           port: ${{ secrets.PORT }}
           script: ${{ secrets.TEST_SCRIPT }}
           use_insecure_cipher: true
+      - name: Copy Coverage Files
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: "cp test/api/src/coverage.xml /var/www/myadmin"
+          use_insecure_cipher: true
+      - name: cUrl Coverage Files
+        run: curl https://db.chomama.jp/coverage.xml -o coverage.xml
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: pytest-codecov
+          fail_ci_if_error: true
