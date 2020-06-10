@@ -27,6 +27,16 @@ jobs:
           port: ${{ secrets.PORT }}
           script: ${{ secrets.TEST_SCRIPT }}
           use_insecure_cipher: true
+      - name: SCP Files
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          target: "."
+          source: ${{ secrets.TEST_TARGET }}
+          use_insecure_cipher: true
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
