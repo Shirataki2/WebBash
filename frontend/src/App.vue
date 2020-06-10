@@ -19,6 +19,7 @@
           <v-btn
             icon
             v-on="on"
+            v-if="false"
             @click="search"
           >
             <v-icon>
@@ -406,6 +407,7 @@
                   </v-card-text>
                   <v-card-subtitle style="font-family: monospace">[EXITCODE]</v-card-subtitle>
                   <v-card-text style="font-family: monospace">{{ exitCode }}</v-card-text>
+                  <!--
                   <v-card-text v-if="exitCode !== ''">
                     <v-dialog
                       v-model="saveDialog"
@@ -476,6 +478,7 @@
                       </v-card>
                     </v-dialog>
                   </v-card-text>
+                -->
                 </v-card>
               </v-col>
             </v-row>
@@ -504,7 +507,7 @@
         padless
         cols="12"
       >
-        Version 1.0.0 |
+        Version 1.1.0 |
         &copy; {{ new Date().getFullYear() }} — <strong>FF</strong> (Twitter: <a
           target="_blank"
           href="https://twitter.com/fujifog"

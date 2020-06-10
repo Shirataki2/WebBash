@@ -42,6 +42,7 @@
         <li>送信した画像はサーバーに保存されません</li>
       </ol>
     </div>
+    <!--
     <div class="mt-6 mb-5">
       <h3 class="mb-2">コードの共有</h3>
       <ol>
@@ -60,6 +61,7 @@
         <li>Elasticsearchのプラグインであるkuromojiでコードの説明を形態素解析しています．</li>
       </ol>
     </div>
+    -->
     <div class="mt-6 mb-5">
       <h3 class="mb-2">履歴</h3>
       <ol>

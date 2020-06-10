@@ -6,7 +6,7 @@ docker-compose -f docker-compose.dev.yml build
 echo '[*] Prepare Frontend'
 docker-compose -f docker-compose.dev.yml up -d frontend
 echo '[*] Run Database'
-docker-compose -f docker-compose.dev.yml up -d es01 mongo
+docker-compose -f docker-compose.dev.yml up -d mongo
 echo '[*] Wait for Start Database'
 sleep 20
 echo '[*] Run Services'
