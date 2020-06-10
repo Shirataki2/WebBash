@@ -3,6 +3,7 @@ from pymongo import MongoClient, DESCENDING
 from datetime import datetime, timedelta
 from typing import NamedTuple
 from pytimeparse import parse
+from os import environ
 
 
 class Client(NamedTuple):
@@ -17,6 +18,8 @@ class Limiter:
         self.client = MongoClient(f'mongodb://{user}:{passwd}@{host}:{port}')
         self.db = self.client.user_log
         self.log = self.db.access_log
+        if environ.get('API_ENV') == 'TEST':
+            self.log.drop()
 
     def limit(self, name, times=1, per='1 day', duration='1 week'):
         def _inner(x_forwarded_for: str = Header(..., description='To get your IP.')):
@@ -46,10 +49,7 @@ class Limiter:
         return timedelta(seconds=parse(duration))
 
     def _on_access(self, name: str, _ip: str):
-        try:
-            ip = _ip.split(', ')[0]
-        except:
-            ip = _ip
+        ip = _ip.split(', ')[0]
         try:
             last = self.log.find({"ip": ip, 'name': name}).sort(
                 'access_at', DESCENDING)[0]

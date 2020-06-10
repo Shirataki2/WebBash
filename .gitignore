@@ -8,3 +8,7 @@
 .env.prod.secret
 /healthchecker
 /mongo_db
+/api/src/.coverage
+/api/src/coverage.xml
+/api/src/htmlcov
+/test
