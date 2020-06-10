@@ -36,7 +36,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
-          script: "cp api/src/coverage.xml /var/www/myadmin"
+          script: "cp test/api/src/coverage.xml /var/www/myadmin"
           use_insecure_cipher: true
       - name: cUrl Coverage Files
         run: curl https://db.chomama.jp/coverage.xml -o coverage.xml
