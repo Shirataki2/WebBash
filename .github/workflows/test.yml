@@ -27,16 +27,17 @@ jobs:
           port: ${{ secrets.PORT }}
           script: ${{ secrets.TEST_SCRIPT }}
           use_insecure_cipher: true
-      - name: SCP Files
-        uses: appleboy/scp-action@master
+      - name: Copy Coverage Files
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
+          password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
-          target: "."
-          source: ${{ secrets.TEST_TARGET }}
+          script: "cp api/src/coverage.xml /var/www/myadmin"
           use_insecure_cipher: true
+      - name: cUrl Coverage Files
+        run: curl https://db.chomama.jp/coverage.xml -o coverage.xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
