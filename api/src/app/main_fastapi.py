@@ -37,7 +37,6 @@ from time import sleep, perf_counter
 import docker
 from docker import types
 from shutil import rmtree
-from .es import SourceController, Source
 from .limiter import Limiter
 from .conf import docker_prepare_conf, fastapi_config
 from .decorators import run_container
@@ -47,7 +46,6 @@ api = FastAPI(**fastapi_config)
 limiter = Limiter(user=os.environ['MONGO_INITDB_ROOT_USERNAME'],
                   passwd=os.environ['MONGO_INITDB_ROOT_PASSWORD'])
 docker_client = docker.from_env()
-es_code_client = SourceController()
 
 
 def custom_openapi():
@@ -55,7 +53,7 @@ def custom_openapi():
         return api.openapi_schema
     openapi_schema = get_openapi(
         title="Web Bash",
-        version="v 1.0.0",
+        version="v 1.1.0",
         openapi_prefix='/api',
         description="API for executing shell(gei) scripts",
         routes=api.routes,
@@ -95,126 +93,126 @@ class ShellgeiResponse(BaseModel):
                                               'be uploaded.\n\nThis field contains the URL to access these images.'))
 
 
-class ShellgeiSaveRequest(BaseModel):
-    author: str = Body(...,
-                       description='User Name', max_length=16)
-    description: str = Body(...,
-                            description='Details about source code', max_length=280)
-    main: str = Body(..., description='Source Code', max_length=4000)
+# class ShellgeiSaveRequest(BaseModel):
+#     author: str = Body(...,
+#                        description='User Name', max_length=16)
+#     description: str = Body(...,
+#                             description='Details about source code', max_length=280)
+#     main: str = Body(..., description='Source Code', max_length=4000)
 
 
-class ShellgeiUpdateRequest(BaseModel):
-    pid: str = Body(...)
-    author: Optional[str] = Body(None, max_length=16)
-    description: Optional[str] = Body(None, max_length=280)
-    main: Optional[str] = Body(None, max_length=4000)
-    votes: Optional[int] = Body(None, ge=0)
-    views: Optional[int] = Body(None, ge=0)
+# class ShellgeiUpdateRequest(BaseModel):
+#     pid: str = Body(...)
+#     author: Optional[str] = Body(None, max_length=16)
+#     description: Optional[str] = Body(None, max_length=280)
+#     main: Optional[str] = Body(None, max_length=4000)
+#     votes: Optional[int] = Body(None, ge=0)
+#     views: Optional[int] = Body(None, ge=0)
 
 
-class SortOrder(str, Enum):
-    asc = 'asc'
-    desc = 'desc'
+# class SortOrder(str, Enum):
+#     asc = 'asc'
+#     desc = 'desc'
 
 
-class SortKey(str, Enum):
-    _score = '_score'
-    post_at = 'post_at'
-    author = 'author'
-    description = 'description'
-    main = 'main'
-    votes = 'votes'
-    views = 'views'
+# class SortKey(str, Enum):
+#     _score = '_score'
+#     post_at = 'post_at'
+#     author = 'author'
+#     description = 'description'
+#     main = 'main'
+#     votes = 'votes'
+#     views = 'views'
 
 
-class SearchQuery:
-    def __init__(
-        self,
-        author: str = Query(
-            None,
-            description='User Name',
-            max_length=16
-        ),
-        description: str = Query(
-            None,
-            description='Details about source code',
-            max_length=280
-        ),
-        main: str = Query(None, description='Source Code', max_length=4000),
-        offset: int = Query(
-            0,
-            description='`offset` is used to skip the number of records from the results.',
-            ge=0,
-            le=100000
-        ),
-        limit: int = Query(
-            10,
-            description=('`limit` will retrieveonly the number of records '
-                         'specified after the `limit` keyword, unless the '
-                         'query itself returns fewer records than the number '
-                         'specified by `limit`.'),
-            ge=1,
-            le=20
-        ),
-        order: SortOrder = Query(
-            SortOrder.desc,
-            description='Ascending or Descending order.'
-        ),
-        key: SortKey = Query(
-            SortKey.post_at,
-            description='Sort key'
-        )
-    ):
-        self.author: Optional[str] = author
-        self.description: Optional[str] = description
-        self.main: Optional[str] = main
-        self.offset: Optional[int] = offset
-        self.limit: Optional[int] = limit
-        self.order: SortOrder = order
-        self.key: SortKey = key
+# class SearchQuery:
+#     def __init__(
+#         self,
+#         author: str = Query(
+#             None,
+#             description='User Name',
+#             max_length=16
+#         ),
+#         description: str = Query(
+#             None,
+#             description='Details about source code',
+#             max_length=280
+#         ),
+#         main: str = Query(None, description='Source Code', max_length=4000),
+#         offset: int = Query(
+#             0,
+#             description='`offset` is used to skip the number of records from the results.',
+#             ge=0,
+#             le=100000
+#         ),
+#         limit: int = Query(
+#             10,
+#             description=('`limit` will retrieveonly the number of records '
+#                          'specified after the `limit` keyword, unless the '
+#                          'query itself returns fewer records than the number '
+#                          'specified by `limit`.'),
+#             ge=1,
+#             le=20
+#         ),
+#         order: SortOrder = Query(
+#             SortOrder.desc,
+#             description='Ascending or Descending order.'
+#         ),
+#         key: SortKey = Query(
+#             SortKey.author,
+#             description='Sort key'
+#         )
+#     ):
+#         self.author: Optional[str] = author
+#         self.description: Optional[str] = description
+#         self.main: Optional[str] = main
+#         self.offset: Optional[int] = offset
+#         self.limit: Optional[int] = limit
+#         self.order: SortOrder = order
+#         self.key: SortKey = key
 
-    def to_query(self):
-        query = {
-            'query': {
-                'bool': {
-                    'must': []
-                }
-            }
-        }
-        if self.author:
-            query['query']['bool']['must'].append(
-                {'match': {'author': self.author}})
-        if self.description:
-            query['query']['bool']['must'].append(
-                {'match': {'description': self.description}})
-        if self.main:
-            query['query']['bool']['must'].append(
-                {'match': {'main': self.main}})
-        if not self.author and not self.description and not self.main:
-            query['query'] = {'match_all': {}}
-        query['sort'] = {
-            self.key: {
-                "order": self.order,
-            }
-        }
-        query['from'] = self.offset
-        query['size'] = self.limit
-        return query
-
-
-class PostSchema(BaseModel):
-    _id: str = Body('d9f0ac7f073d', description='Post ID')
-    author: str = Body('Awesome User', description='Post ID')
-    description: str = Body('ls example', description='Source Description')
-    main: str = Body('ls', description='Source')
-    post_at: datetime = Body(datetime.now(), description='Post Time')
-    votes: int = Body(10, description='Upvote Count')
-    views: int = Body(20, description='Views Count')
+#     def to_query(self):
+#         query = {
+#             'query': {
+#                 'bool': {
+#                     'must': []
+#                 }
+#             }
+#         }
+#         if self.author:
+#             query['query']['bool']['must'].append(
+#                 {'match': {'author': self.author}})
+#         if self.description:
+#             query['query']['bool']['must'].append(
+#                 {'match': {'description': self.description}})
+#         if self.main:
+#             query['query']['bool']['must'].append(
+#                 {'match': {'main': self.main}})
+#         if not self.author and not self.description and not self.main:
+#             query['query'] = {'match_all': {}}
+#         query['sort'] = [{
+#             self.key.value: {
+#                 "order": self.order.value,
+#             }
+#         }]
+#         query['from'] = self.offset
+#         query['size'] = self.limit
+#         return query
 
 
-class SearchResponse(BaseModel):
-    num: int = Body(None, description='Example: `1`\n\nNumber of Hit')
-    content: List[PostSchema] = Body(None, description='Hit Posts')
+# class PostSchema(BaseModel):
+#     pid: str = Body('d9f0ac7f073d', description='Post ID')
+#     author: str = Body('Awesome User', description='Post Author')
+#     description: str = Body('ls example', description='Source Description')
+#     main: str = Body('ls', description='Source')
+#     post_at: datetime = Body(datetime.now(), description='Post Time')
+#     votes: int = Body(10, description='Upvote Count')
+#     views: int = Body(20, description='Views Count')
+
+
+# class SearchResponse(BaseModel):
+#     num: int = Body(0, description='Example: `1`\n\nNumber of Hit')
+#     content: List[PostSchema] = Body([], description='Hit Posts')
 
 
 class PingResponse(BaseModel):
@@ -283,7 +281,7 @@ async def image(path: str = Path(..., description='Image Name such as `029cd08ff
     dependencies=[
         Depends(limiter.limit('shellgei_10minlimit', 120, '10min', '30min')),
         Depends(limiter.limit('shellgei_1minlimit', 15, '1min', '90min')),
-        Depends(limiter.limit('shellgei_10seclimit', 5, '10sec', '1days')),
+        Depends(limiter.limit('shellgei_10seclimit', 10, '10sec', '1days')),
         Depends(limiter.limit('shellgei_1seclimit', 3, '1sec', '1000000days')),
     ]
 )
@@ -337,7 +335,7 @@ async def run(
 
         2. Over 15 requests in 1 minutes: 90-minute ban
 
-        3. Over 5 requests in 10 seconds: 7-day ban
+        3. Over 10 requests in 10 seconds: 7-day ban
 
         4. Over 3 requests in 1 seconds: 1 million hrs ban.
     '''
@@ -372,35 +370,44 @@ async def run(
     return resp
 
 
-@api.post("/posts", status_code=204, tags=['Shell Script'])
-async def post_code(req: ShellgeiSaveRequest):
-    '''
-    Storing the source code to the database.
-    '''
-    Source(**req.dict()).register(es_code_client)
+# @api.post("/posts", status_code=204, tags=['Shell Script'])
+# async def post_code(req: ShellgeiSaveRequest):
+#     '''
+#     Storing the source code to the database.
+#     '''
+#     Source(**req.dict()).register(es_code_client)
 
 
-@api.put("/posts", status_code=204, include_in_schema=False)
-async def update_code(req: ShellgeiUpdateRequest):
-    print(req.pid, req.dict())
-    post_id = req.pid
-    data = req.dict()
-    try:
-        es_code_client.update_by_id(post_id, data)
-    except elasticsearch.exceptions.NotFoundError as e:
-        raise HTTPException(404, 'Post not Found')
+# @api.put("/posts", status_code=204, include_in_schema=False)
+# async def update_code(req: ShellgeiUpdateRequest):
+#     post_id = req.pid
+#     data = req.dict()
+#     try:
+#         es_code_client.update_by_id(post_id, data)
+#     except elasticsearch.exceptions.NotFoundError as e:
+#         raise HTTPException(404, 'Post not Found')
 
 
-@api.get("/search", response_model=SearchResponse, tags=['Shell Script'])
-async def search(q: SearchQuery = Depends(SearchQuery)):
-    '''
-    Search for source code stored in the database.
-    '''
-    num, resp = es_code_client.fetch_by_query(q.to_query())
-    return {
-        "num": num,
-        "content": resp
-    }
+# @api.get("/search/", response_model=SearchResponse, tags=['Shell Script'])
+# async def search(q: SearchQuery = Depends(SearchQuery)):
+#     '''
+#     Search for source code stored in the database.
+#     '''
+#     print(q.author)
+#     print(q.description)
+#     print(q.main)
+#     num, resp = es_code_client.fetch_by_query(q.to_query())
+#     if resp is None:
+#         resp = []
+#     print(list(map(lambda x: x.json(), resp)))
+#     print({
+#         "num": num,
+#         "content": list(map(lambda x: x.json(), resp))
+#     })
+#     return {
+#         "num": num,
+#         "content": list(map(lambda x: x.json(), resp))
+#     }
 
 
 def decode(s, line=100, count=3000):
