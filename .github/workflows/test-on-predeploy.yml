@@ -1,17 +1,11 @@
-name: Test on Merge
+name: Test on Predeploy
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
-    branches: develop
+  push:
+    branches:
+      - develop
 jobs:
-  prepare:
-    runs-on: ubuntu-latest
-    if: github.event.label.name == 'No CI'
-    steps:
-      - run: echo "${{ github.event.label.name }}"
   test:
     runs-on: ubuntu-latest
-    needs: prepare
     steps:
       - uses: actions/checkout@master
       - name: SSH Remove Previous Dir
