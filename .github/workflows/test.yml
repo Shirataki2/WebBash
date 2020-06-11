@@ -2,9 +2,7 @@ name: Test on Merge
 on:
   pull_request:
     types: [opened, reopened, synchronize]
-    branches:
-      - develop
-      - master
+    branches: develop
 jobs:
   prepare:
     runs-on: ubuntu-latest
