@@ -625,11 +625,13 @@ class App extends Vue {
       return this.onError("最大文字数を超過しています");
     }
     try {
-      if (this.media) {
-        for (let i = 0; i < Math.min(4, this.media.length); i++) {
-          // eslint-disable-next-line
-          const file: Blob = this.media[i];
-          formdata.append(`file_${i}`, file);
+      if (this.media.length > 0) {
+        if (this.media.length > 4) {
+          return this.onError("画像は最大4枚まで送信可能です");
+        }
+        for (let i = 0; i < this.media.length; i++) {
+          const file = this.media[i];
+          formdata.append(`f${i}`, file);
         }
       }
     } catch (e) {
