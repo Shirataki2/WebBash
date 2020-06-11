@@ -1,0 +1,31 @@
+name-template: "v$NEXT_PATCH_VERSION"
+tag-template: "v$NEXT_PATCH_VERSION"
+categories:
+  - title: "🚀 新機能"
+    labels:
+      - "Feature"
+  - title: "🐛 バグ修正"
+    labels:
+      - "Bug"
+  - title: "🧰 メンテナンス"
+    labels:
+      - "chore"
+  - title: "🤖 自動化"
+    labels:
+      - "Automation"
+change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
+version-resolver:
+  major:
+    labels:
+      - "major"
+  minor:
+    labels:
+      - "minor"
+  patch:
+    labels:
+      - "patch"
+  default: patch
+template: |
+  ## Changes
+
+  $CHANGES
