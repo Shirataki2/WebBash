@@ -3,6 +3,9 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
     branches: develop
+  push:
+    branches:
+      - develop
 jobs:
   prepare:
     runs-on: ubuntu-latest
