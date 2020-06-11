@@ -292,10 +292,28 @@ async def run(
         max_length=4000,
         description='Shell script source code'
     ),
-    files: List[UploadFile] = File(
+    f0: UploadFile = File(
         None,
         description=('File to be attached.\n\nThese files are renamed '
-                     'as `0`,`1`,`2`,`3`, and then added to `/media` '
+                     'as `0`, and then added to `/media` '
+                     'folder.\nThe saved image can be called from the script.')
+    ),
+    f1: UploadFile = File(
+        None,
+        description=('File to be attached.\n\nThese files are renamed '
+                     'as `1`, and then added to `/media` '
+                     'folder.\nThe saved image can be called from the script.')
+    ),
+    f2: UploadFile = File(
+        None,
+        description=('File to be attached.\n\nThese files are renamed '
+                     'as `2`, and then added to `/media` '
+                     'folder.\nThe saved image can be called from the script.')
+    ),
+    f3: UploadFile = File(
+        None,
+        description=('File to be attached.\n\nThese files are renamed '
+                     'as `3`, and then added to `/media` '
                      'folder.\nThe saved image can be called from the script.')
     ),
     filename: SupportedFilenames = Form(
@@ -346,6 +364,7 @@ async def run(
     if len(container_list) > 10:
         raise HTTPException(503)
     run_id = secrets.token_hex(8)
+    files = [f for f in [f0, f1, f2, f3] if f is not None]
     await write_source(run_id, source, filename, files)
     container = create_container(image, run_id, docker_prepare_conf)
     resp = ShellgeiResponse()
