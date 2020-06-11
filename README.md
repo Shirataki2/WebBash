@@ -22,6 +22,11 @@ Web上でシェル芸の練習ができたら嬉しいね．というモチベ�
 　（💩💩💩💩👄💩💩💩💩）
 ```
 
+また，既存のサービスを大いにリスペクトしています．
+
+- [websh](https://github.com/jiro4989/websh)
+- [SGWeb](https://github.com/kekeho/SGWeb)
+
 ## 使用方法
 
 ### 1. 基本
