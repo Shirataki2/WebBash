@@ -1,3 +1,4 @@
 Feature: ["feature/*", "feat/*"]
 Bug: fix/*
 Chore: chore/*
+Refactor: refactor/*
