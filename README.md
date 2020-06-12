@@ -1,7 +1,13 @@
 # WebBash
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![codecov](https://codecov.io/gh/Shirataki2/WebBash/branch/feature%2F%2324-add-tests/graph/badge.svg)](https://codecov.io/gh/Shirataki2/WebBash) ![](https://img.shields.io/badge/API-v1.1.0-blue)
+[![](https://img.shields.io/github/v/release/shirataki2/webbash)](https://github.com/Shirataki2/WebBash/releases)
+[![codecov](https://codecov.io/gh/Shirataki2/WebBash/branch/feature%2F%2324-add-tests/graph/badge.svg)](https://codecov.io/gh/Shirataki2/WebBash)
+
+[![](https://img.shields.io/website?down_message=Offline&label=Website&up_message=Online&url=https%3A%2F%2Fbash.chomama.jp)](https://bash.chomama.jp)
+[![](https://img.shields.io/security-headers?url=https%3A%2F%2Fbash.chomama.jp%2F)](https://securityheaders.com/?q=https%3A%2F%2Fbash.chomama.jp%2F&followRedirects=on)
+![Mozilla HTTP Observatory Grade](https://img.shields.io/mozilla-observatory/grade/bash.chomama.jp?publish)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/w/shirataki2/webbash)](https://github.com/Shirataki2/WebBash/graphs/commit-activity)
 
 ![](https://github.com/Shirataki2/WebBash/workflows/Test%20on%20Merge/badge.svg) ![](https://github.com/Shirataki2/WebBash/workflows/Deploy%20To%20Server/badge.svg)
 
