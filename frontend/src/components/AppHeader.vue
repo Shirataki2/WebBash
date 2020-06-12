@@ -64,7 +64,7 @@
     <v-btn
       icon
       target="_blank"
-      :href="`https://twitter.com/intent/tweet?text=${encodeURI(code)}&hashtags=${encodeURI('シェル芸')}`"
+      :href="`https://twitter.com/intent/tweet?text=${encodeURIComponent(code)}&hashtags=${encodeURIComponent('シェル芸')}`"
     >
       <v-icon>mdi-twitter</v-icon>
     </v-btn>
