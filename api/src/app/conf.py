@@ -27,8 +27,8 @@ docker_prepare_conf = {
 
 fastapi_config: Mapping = {
     'title': 'WebBash API',
-    'openapi_prefix': '/api/',
+    'openapi_prefix': '/api',
     'openapi_url': "/openapi.json",
-    'docs_url': None,
+    'docs_url': '/dev',
     'redoc_url': '/docs'
 }

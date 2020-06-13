@@ -12,3 +12,10 @@ timeout-decorator
 pytest
 pytimeparse
 pytest-cov
+sqlalchemy
+sqlalchemy_utils
+Authlib
+httpx
+itsdangerous
+pyjwt
+passlib[bcrypt]

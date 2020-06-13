@@ -16,6 +16,7 @@ from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.encoders import jsonable_encoder
 from fastapi.openapi.utils import get_openapi
+from starlette.middleware.sessions import SessionMiddleware
 from pydantic import BaseModel
 from typing import Optional, List
 from enum import Enum
@@ -37,24 +38,29 @@ from time import sleep, perf_counter
 import docker
 from docker import types
 from shutil import rmtree
-from .limiter import Limiter
-from .conf import docker_prepare_conf, fastapi_config
-from .decorators import run_container
+from app.router import oauth, token
+from app.database import models
+from app.database.base import engine, SessionLocal, get_db
+from app.limiter import Limiter
+from app.conf import docker_prepare_conf, fastapi_config
+from app.decorators import run_container
 
+models.Base.metadata.create_all(bind=engine)
 
 api = FastAPI(**fastapi_config)
+api.add_middleware(SessionMiddleware, secret_key=os.environ['SESSION_KEY'])
 limiter = Limiter(user=os.environ['MONGO_INITDB_ROOT_USERNAME'],
                   passwd=os.environ['MONGO_INITDB_ROOT_PASSWORD'])
 docker_client = docker.from_env()
 
 
-def custom_openapi():
+def custom_openapi(openapi_prefix: str):
     if api.openapi_schema:
         return api.openapi_schema
     openapi_schema = get_openapi(
         title="Web Bash",
-        version="v 1.1.1",
-        openapi_prefix='/api',
+        version="v 1.2.0",
+        openapi_prefix=openapi_prefix,
         description="API for executing shell(gei) scripts",
         routes=api.routes,
     )
@@ -259,6 +265,19 @@ async def run(
     background_tasks.add_task(clean_container, container, run_id, [
                               '/src', '/images', '/media'])
     return resp
+
+
+api.include_router(
+    oauth.router,
+    prefix='/oauth',
+    tags=['OAuth']
+)
+
+api.include_router(
+    token.router,
+    prefix='/token',
+    tags=['Token']
+)
 
 
 def decode(s, line=100, count=3000):
