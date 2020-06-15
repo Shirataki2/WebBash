@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy_utils import UUIDType
 
 from app.database.base import Base
-
+from datetime import datetime
 import uuid
 
 
@@ -13,6 +13,7 @@ class User(Base):
     id = Column(UUIDType(binary=False), primary_key=True,
                 default=uuid.uuid4, index=True, unique=True)
     username = Column(String(length=32), index=True)
+    avater_url = Column(String(length=256))
     banned = Column(Boolean, default=False)
 
     posts = relationship("Post", back_populates="owner")
@@ -41,6 +42,7 @@ class Post(Base):
     title = Column(String(length=32))
     description = Column(String(length=280))
     main = Column(String(length=4000))
+    post_at = Column(DateTime, default=datetime.now())
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="posts")
@@ -53,7 +55,6 @@ class Post(Base):
 class Token(Base):
     __tablename__ = 'tokens'
     social_id = Column(Integer, primary_key=True, index=True, unique=True)
-    social_name = Column(String)
     refresh_token = Column(String)
     access_token_expire_at = Column(DateTime)
     refresh_token_expire_at = Column(DateTime)

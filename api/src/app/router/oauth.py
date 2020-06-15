@@ -19,7 +19,7 @@ access_token_expire = timedelta(
 
 
 @router.get("/login")
-async def login(request: Request):
+async def login(request: Request):  # pragma: no cover
     if os.environ['NODE_ENV'] == 'development':
         redirect_uri = 'http://192.168.10.19:5919/api/oauth/auth'
     else:
@@ -28,22 +28,24 @@ async def login(request: Request):
 
 
 @router.get('/auth')
-async def auth(request: Request, db: Session = Depends(get_db)):
-    token = await oauth.twitter.authorize_access_token(request)
-    print(token)
+async def auth(request: Request, db: Session = Depends(get_db)):  # pragma: no cover
+    try:
+        token = await oauth.twitter.authorize_access_token(request)
+    except:
+        raise exceptions.MissingRequestTokenException()
     if (user := await authenticate_user(token['oauth_token'], token['oauth_token_secret'])):
         access_token = create_access_token(
             user["user_id"], access_token_expire)
+        print(token)
         if (db_user := get_user_by_social_id(db, user['user_id'])):
             update_token(
                 db, db_user, access_token['refresh_token']
             )
         else:
             db_user = create_user(
-                db, schemas.UserCreate(username=user["user_name"]))
+                db, schemas.UserCreate(username=user["user_name"], avater_url=user["avater_url"]))
             usertoken = create_token(db, schemas.TokenCreate(
                 social_id=user['user_id'],
-                social_name=user['user_name'],
                 refresh_token=access_token['refresh_token'],
             ), owner_id=db_user.id)
         return access_token

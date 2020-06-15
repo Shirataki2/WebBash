@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 import uuid
@@ -7,6 +7,7 @@ import uuid
 class PostBase(BaseModel):
     title: str
     description: str
+    owner_id: uuid.UUID
     main: str
 
 
@@ -16,29 +17,8 @@ class PostCreate(PostBase):
 
 class Post(PostBase):
     id: uuid.UUID
-    owner_id: uuid.UUID
-    upvotes: List['User'] = []
-    downvotes: List['User'] = []
-
-    class Config:
-        orm_mode = True
-
-
-class UserBase(BaseModel):
-    username: str
-
-
-class UserCreate(UserBase):
-    pass
-
-
-class User(UserBase):
-    id: uuid.UUID
-    token: 'Token'
-    banned: bool = False
-    posts: List[Post] = []
-    upvoted_posts: List[Post] = []
-    downvoted_posts: List[Post] = []
+    upvotes: List[uuid.UUID] = []
+    downvotes: List[uuid.UUID] = []
 
     class Config:
         orm_mode = True
@@ -50,14 +30,38 @@ class TokenBase(BaseModel):
 
 class TokenCreate(TokenBase):
     social_id: int
-    social_name: str
     refresh_token: str
 
 
-class Token(TokenCreate):
+class Token(TokenBase):
     owner_id: uuid.UUID
-    access_token_expire_at: datetime
-    refresh_token_expire_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
+class UserBase(BaseModel):
+    pass
+
+
+class UserCreate(UserBase):
+    username: str
+    avater_url: str
+
+
+class UserUpdate(UserBase):
+    username: Optional[str]
+    avater_url: Optional[str]
+
+
+class User(UserBase):
+    id: uuid.UUID
+    username: str
+    avater_url: str
+    banned: bool = False
+    posts: List[uuid.UUID]
+    upvoted_posts: List[uuid.UUID]
+    downvoted_posts: List[uuid.UUID]
 
     class Config:
         orm_mode = True

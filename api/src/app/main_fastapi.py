@@ -22,6 +22,7 @@ from typing import Optional, List
 from enum import Enum
 from timeout_decorator import timeout, TimeoutError
 from datetime import datetime
+import starlette
 import elasticsearch
 import json
 import shutil
@@ -38,7 +39,7 @@ from time import sleep, perf_counter
 import docker
 from docker import types
 from shutil import rmtree
-from app.router import oauth, token
+from app.router import oauth, token, users, posts
 from app.database import models
 from app.database.base import engine, SessionLocal, get_db
 from app.limiter import Limiter
@@ -47,21 +48,24 @@ from app.decorators import run_container
 
 models.Base.metadata.create_all(bind=engine)
 
+
 api = FastAPI(**fastapi_config)
 api.add_middleware(SessionMiddleware, secret_key=os.environ['SESSION_KEY'])
+
+
 limiter = Limiter(user=os.environ['MONGO_INITDB_ROOT_USERNAME'],
                   passwd=os.environ['MONGO_INITDB_ROOT_PASSWORD'])
 docker_client = docker.from_env()
 
 
-def custom_openapi(openapi_prefix: str):
+def custom_openapi(openapi_prefix: str):  # pragma: no cover
     if api.openapi_schema:
         return api.openapi_schema
     openapi_schema = get_openapi(
-        title="Web Bash",
-        version="v 1.2.0",
+        title="Web Bash API",
+        version="v 2.0.0",
         openapi_prefix=openapi_prefix,
-        description="API for executing shell(gei) scripts",
+        description="シェル芸 on API",
         routes=api.routes,
     )
     openapi_schema["info"]["x-logo"] = {
@@ -114,7 +118,7 @@ class StatusResponse(BaseModel):
 )
 def ping():
     """
-    Returns a simple response ... if the server is alive.
+    単純なレスポンスを返します
     """
     return {
         "status": "API Server Working",
@@ -124,7 +128,7 @@ def ping():
 @api.get(
     "/images/{path}",
     response_class=FileResponse,
-    description='Return an image generated from shell-gei code.',
+    description='過去のシェル芸の結果生成された画像を得ます．',
     response_description='Requested Image',
     responses={
         200: {"content": {"image/*": {}}},
@@ -135,7 +139,7 @@ def ping():
     },
     tags=['General']
 )
-async def image(path: str = Path(..., description='Image Name such as `029cd08ffe65c2da_6bb039e56b21c3665eb10fbeaf0a9cfd64b369645779a1e9.png`')):
+async def image(path: str = Path(..., description='画像名\n\n例: `029cd08ffe65c2da_6bb039e56b21c3665eb10fbeaf0a9cfd64b369645779a1e9.png`')):
     fp = '/images/' + path
     if os.path.exists(fp):
         return FileResponse(fp)
@@ -168,78 +172,78 @@ async def run(
     source: str = Form(
         ...,
         max_length=4000,
-        description='Shell script source code'
+        description='シェル芸を走らせます'
     ),
     f0: UploadFile = File(
         None,
-        description=('File to be attached.\n\nThese files are renamed '
-                     'as `0`, and then added to `/media` '
-                     'folder.\nThe saved image can be called from the script.')
+        description=('添付するファイル．\n\nTwitterでの画像送信の要領で最大４枚送信可能です．\n\n'
+                     'このファイルは`0`と改名されて`/media`フォルダに置かれます．\n\n'
+                     'スクリプト中に呼び出すなどしてご活用ください．')
     ),
     f1: UploadFile = File(
         None,
-        description=('File to be attached.\n\nThese files are renamed '
-                     'as `1`, and then added to `/media` '
-                     'folder.\nThe saved image can be called from the script.')
+        description=('添付するファイル．\n\nTwitterでの画像送信の要領で最大４枚送信可能です．\n\n'
+                     'このファイルは`1`と改名されて`/media`フォルダに置かれます．\n\n'
+                     'スクリプト中に呼び出すなどしてご活用ください．')
     ),
     f2: UploadFile = File(
         None,
-        description=('File to be attached.\n\nThese files are renamed '
-                     'as `2`, and then added to `/media` '
-                     'folder.\nThe saved image can be called from the script.')
+        description=('添付するファイル．\n\nTwitterでの画像送信の要領で最大４枚送信可能です．\n\n'
+                     'このファイルは`2`と改名されて`/media`フォルダに置かれます．\n\n'
+                     'スクリプト中に呼び出すなどしてご活用ください．')
     ),
     f3: UploadFile = File(
         None,
-        description=('File to be attached.\n\nThese files are renamed '
-                     'as `3`, and then added to `/media` '
-                     'folder.\nThe saved image can be called from the script.')
+        description=('添付するファイル．\n\nTwitterでの画像送信の要領で最大４枚送信可能です．\n\n'
+                     'このファイルは`3`と改名されて`/media`フォルダに置かれます．\n\n'
+                     'スクリプト中に呼び出すなどしてご活用ください．')
     ),
     filename: SupportedFilenames = Form(
         SupportedFilenames.shell,
-        description='The file name to save the contents of `source`.'
+        description='ソースコードを保存するファイル名'
     ),
     command: SupportedCommands = Form(
         SupportedCommands.default,
-        description=('Commands for executing shell scripts.\n\n'
-                     'The file name `filename` set above can be used with `%(filename)s`.')
+        description=('シェル芸実行の際に走らせるコード\n\n'
+                     '上で定義したのパラメーター`filename`は`%(filename)s`とすることで利用できます.')
     ),
     image: SupportedImages = Form(
         SupportedImages.shellgeibot,
-        description='Docker container name for running shell scripts.'
+        description='シェル芸用のDockerコンテナ'
     ),
 ):
     '''
-        Run Shellgei.
+        シェル芸を走らせます．
 
-        **Execute on the Docker container under the following constraints.**
+        **以下の制約の下実行されます**
 
-        1. The maximum execution time is 20 seconds.
+        1. 実行時間は最大20秒.
 
-        2. The output file size limit is 5MB.
+        2. 最大出力ファイルサイズは5MB.
 
-        3. The number of available processes is 128.
+        3. 利用可能プロセス数は128.
 
-        4. Network connection is not available.
+        4. ネットワークは利用不可.
 
-        5. The available memory is 256MB and the swap memory is 256MB.
+        5. メモリは256MBまで使用可能.
 
-        6. The number of characters that can be output is 3000, and the number of lines is 100.
+        6. 3000文字もしくは100行以上の出力は省略される.
 
-        __If you make a large number of requests in a very short time, the application rejects the requests for a certain period of time.__
+        短期間に集中してアクセスがあった場合，一定期間のアクセスが禁止されます，
 
-        1. Over 120 requests in 10 minutes: 30-minute ban
+        1. 120回 / 10分: 30分 利用停止
 
-        2. Over 15 requests in 1 minutes: 90-minute ban
+        2. 15回 / 1分: 90分 利用停止
 
-        3. Over 10 requests in 10 seconds: 7-day ban
+        3. 10回 / 10秒: 24時間 利用停止
 
-        4. Over 3 requests in 1 seconds: 1 million hrs ban.
+        4. 3回 / 1秒: 無期限 利用停止
     '''
-    print(filename.value, image.value, command.value)
     container_list = docker_client.containers.list(
         filters={'ancestor': image.value}
     )
-    if len(container_list) > 10:
+    # TODO: ここの503をテストでカバーするのむずい
+    if len(container_list) > 10:  # pragma: no cover
         raise HTTPException(503)
     run_id = secrets.token_hex(8)
     files = [f for f in [f0, f1, f2, f3] if f is not None]
@@ -279,6 +283,18 @@ api.include_router(
     tags=['Token']
 )
 
+api.include_router(
+    users.router,
+    prefix='/users',
+    tags=['Users & Posts']
+)
+
+api.include_router(
+    posts.router,
+    prefix='/posts',
+    tags=['Users & Posts']
+)
+
 
 def decode(s, line=100, count=3000):
     s = s.decode('utf-8', "replace") if s else ""
@@ -297,7 +313,6 @@ def upload_images(run_id):
     fps = []
     if images:
         for i, image in enumerate(sorted(images)[:4]):
-            print(image)
             ext = os.path.splitext(image)[1]
             fp = f'/images/{run_id}_{secrets.token_hex(24)}{ext}'
             shutil.copy(image, fp)
@@ -334,7 +349,6 @@ def create_container(image, run_id, conf):
 @run_container()
 @timeout(20)
 def run_shellgei(container, command, filename, run_id):
-    print(str(command.value) % {"filename": filename.value})
     (exit_code, (stdout, stderr)) = container.exec_run(
         cmd=str(command.value) % {"filename": filename.value},
         workdir=f'/src',

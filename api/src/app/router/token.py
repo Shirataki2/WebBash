@@ -31,8 +31,6 @@ async def token(
     oauth_token_secret: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    print(oauth_token)
-    print(oauth_token_secret)
     if (user := await authenticate_user(oauth_token, oauth_token_secret)):
         if (db_user := get_user_by_social_id(db, user['user_id'])):
             access_token = create_access_token(
@@ -52,9 +50,9 @@ async def verify(
     db: Session = Depends(get_db),
     access_token: str = Form(..., media_type='application/json'),
 ):
-    status, _ = verify_access_token(db, access_token)
+    status, data = verify_access_token(db, access_token)
     if status == TokenStatus.VALID:
-        return {"detail": "Valid Token"}
+        return {"detail": "Valid Token", "user_id": data['sub']}
     elif status == TokenStatus.EXPIRED:
         raise exceptions.ExpiredTokenException()
     elif status == TokenStatus.INVALID:
