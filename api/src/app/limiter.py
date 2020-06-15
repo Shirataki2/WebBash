@@ -13,16 +13,16 @@ class Client(NamedTuple):
     unban_at: datetime
 
 
-class Limiter:
+class Limiter:  # pragma: no cover
     def __init__(self, host='mongo', port=27017, user='root', passwd='password'):
         self.client = MongoClient(f'mongodb://{user}:{passwd}@{host}:{port}')
         self.db = self.client.user_log
         self.log = self.db.access_log
-        if environ.get('API_ENV') == 'TEST':
+        if environ.get('NODE_ENV') != 'production':  # pragma: no cover
             self.log.drop()
 
     def limit(self, name, times=1, per='1 day', duration='1 week'):
-        def _inner(x_forwarded_for: str = Header(..., description='To get your IP.')):
+        def _inner(x_forwarded_for: str = Header(..., description='クライアントのIPアドレス')):
             params: Client = self._on_access(name, x_forwarded_for)
             log = self._get_logs(params, per)
             if self._access_on_ban(params):

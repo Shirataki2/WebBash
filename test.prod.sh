@@ -1,8 +1,4 @@
 #!/bin/bash
-rm -rf ./test/esdata
-mkdir ./test/esdata
-chown 1000:1000 ./test/esdata
-
 echo '[*] Down Docker Container'
 docker-compose -f docker-compose.test.yml down --remove-orphans
 echo '[*] Build Images'
@@ -10,7 +6,7 @@ docker-compose -f docker-compose.test.yml build
 echo '[*] Build Frontend'
 docker-compose -f docker-compose.test.yml run --entrypoint "bash -c 'yarn install --production=false && yarn build'" frontend
 echo '[*] Run Database'
-docker-compose -f docker-compose.test.yml up -d mongo
+docker-compose -f docker-compose.test.yml up -d mongo postgres
 echo '[*] Wait for Start Database'
 sleep 25
 echo '[*] Run Services'
