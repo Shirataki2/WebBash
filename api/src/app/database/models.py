@@ -25,13 +25,17 @@ class User(Base):
 
 
 user_upvotes = Table('user_upvotes', Base.metadata,
-                     Column('user_id', Integer, ForeignKey('users.id')),
-                     Column('post_id', Integer, ForeignKey('posts.id')),
+                     Column('user_id', UUIDType(binary=False),
+                            ForeignKey('users.id')),
+                     Column('post_id', UUIDType(binary=False),
+                            ForeignKey('posts.id')),
                      )
 
 user_downvotes = Table('user_downvotes', Base.metadata,
-                       Column('user_id', Integer, ForeignKey('users.id')),
-                       Column('post_id', Integer, ForeignKey('posts.id')),
+                       Column('user_id', UUIDType(binary=False),
+                              ForeignKey('users.id')),
+                       Column('post_id', UUIDType(binary=False),
+                              ForeignKey('posts.id')),
                        )
 
 
