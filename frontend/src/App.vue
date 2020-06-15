@@ -99,6 +99,7 @@
         </v-btn>
       </v-snackbar>
     </v-content>
+    <AppFooter />
   </v-app>
 </template>
 

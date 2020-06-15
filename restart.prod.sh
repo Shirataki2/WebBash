@@ -6,7 +6,7 @@ docker-compose -f docker-compose.prod.yml build
 echo '[*] Build Frontend'
 docker-compose -f docker-compose.prod.yml run --entrypoint "bash -c 'yarn install --production=false && yarn build'" frontend
 echo '[*] Run Database'
-docker-compose -f docker-compose.prod.yml up -d  mongo
+docker-compose -f docker-compose.prod.yml up -d mongo postgres
 echo '[*] Wait for Start Database'
 sleep 20
 echo '[*] Run Services'

@@ -5,7 +5,7 @@
 /**/*.jpg
 *.gif
 /elastic/esdata*
-.env.prod.secret
+.env.*.secret
 /healthchecker
 /mongo_db
 /api/src/.coverage
