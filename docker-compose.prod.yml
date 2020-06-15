@@ -51,7 +51,10 @@ services:
       - ./mongo_db:/data/db
   postgres:
     image: postgres:11-alpine
-    ports: 5432
+    ports:
+      - 5432
     env_file:
       - ./.env.prod
       - ./.env.prod.secret
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
