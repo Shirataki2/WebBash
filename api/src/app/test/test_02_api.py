@@ -32,9 +32,9 @@ def test_run_ls():
     assert resp.json()['exit_code'] == '0'
 
 
-# def test_get_redoc():
-#     resp = client.get('/docs')
-#     assert resp.status_code == 200
+def test_get_redoc():
+    resp = client.get('/docs')
+    assert resp.status_code == 200
 
 
 # def test_run_timeout():
