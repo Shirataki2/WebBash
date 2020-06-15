@@ -43,7 +43,7 @@ class Post(Base):
     description = Column(String(length=280))
     main = Column(String(length=4000))
     post_at = Column(DateTime, default=datetime.now())
-    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner_id = Column(UUIDType(binary=False), ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="posts")
     upvotes = relationship(
