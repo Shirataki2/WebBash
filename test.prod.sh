@@ -1,8 +1,4 @@
 #!/bin/bash
-rm -rf ./test/esdata
-mkdir ./test/esdata
-chown 1000:1000 ./test/esdata
-
 echo '[*] Down Docker Container'
 docker-compose -f docker-compose.test.yml down --remove-orphans
 echo '[*] Build Images'
