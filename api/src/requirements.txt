@@ -19,3 +19,4 @@ httpx
 itsdangerous
 pyjwt
 passlib[bcrypt]
+psycopg2
