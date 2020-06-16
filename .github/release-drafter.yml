@@ -7,12 +7,27 @@ categories:
   - title: "🐛 バグ修正"
     labels:
       - "Bug"
+  - title: "💻 フロントエンドメンテ"
+    labels:
+      - "Front"
+  - title: "🌐 APIサーバーメンテ"
+    labels:
+      - "API"
+  - title: "🐳 Dockerメンテ"
+    labels:
+      - "Docker"
+  - title: "🗄 データベースメンテ"
+    labels:
+      - "Database"
   - title: "🧰 メンテナンス"
     labels:
-      - "chore"
+      - "Chore"
   - title: "🤖 自動化"
     labels:
       - "Automation"
+  - title: "⬆️ リリースコミット"
+    labels:
+      - "release"
 change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
 version-resolver:
   major:
