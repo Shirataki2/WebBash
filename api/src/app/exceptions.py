@@ -29,7 +29,7 @@ class ForbiddenAccessException(HTTPException):
         super().__init__(status_code, detail, headers)
 
 
-class MissingRequestTokenException(HTTPException):
+class MissingRequestTokenException(HTTPException):  # pragma: no cover
     def __init__(self, headers: dict = None):
         status_code = 401
         detail = 'Missing request token.'

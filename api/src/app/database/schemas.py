@@ -7,7 +7,6 @@ import uuid
 class PostBase(BaseModel):
     title: str
     description: str
-    owner_id: uuid.UUID
     main: str
 
 
@@ -17,6 +16,7 @@ class PostCreate(PostBase):
 
 class Post(PostBase):
     id: uuid.UUID
+    owner_id: uuid.UUID
     upvotes: List[uuid.UUID] = []
     downvotes: List[uuid.UUID] = []
 
