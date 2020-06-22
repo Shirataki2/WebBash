@@ -1,4 +1,5 @@
 #!/bin/bash
+rm -f ./api/src/test.sqlite
 echo '[*] Down Docker Container'
 docker-compose -f docker-compose.test.yml down --remove-orphans
 echo '[*] Build Images'
