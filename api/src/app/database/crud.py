@@ -51,7 +51,7 @@ def create_post(db: Session, user: schemas.User, post: schemas.PostCreate):
     return db_post
 
 
-def create_user(db: Session, user: schemas.UserCreate) -> schemas.User:
+def create_user(db: Session, user: schemas.UserCreate) -> schemas.User:  # pragma: no cover
     db_user = models.User(username=user.username, avater_url=user.avater_url)
     db.add(db_user)
     db.commit()
@@ -71,7 +71,7 @@ def get_user_post(db: Session, user_id: uuid.UUID, post_id: uuid.UUID) -> schema
     return db.query(models.Post).join(models.User).filter(models.User.id == user_id, models.Post.id == post_id).first()
 
 
-def create_token(db: Session, token: schemas.TokenCreate, owner_id: uuid.UUID) -> schemas.Token:
+def create_token(db: Session, token: schemas.TokenCreate, owner_id: uuid.UUID) -> schemas.Token:  # pragma: no cover
     db_token = models.Token(
         social_id=token.social_id,
         refresh_token=hash_token(token.refresh_token),
@@ -104,7 +104,7 @@ def verify_access_token(db: Session, access_token) -> Tuple[TokenStatus, Union[D
             access_token, key=os.environ['SECRET_KEY'], algorithms=[
                 os.environ['AUTH_ALGORITHM']]
         )
-    except jwt.ExpiredSignatureError:
+    except jwt.ExpiredSignatureError:  # pragma: no cover
         data = jwt.decode(
             access_token, key=os.environ['SECRET_KEY'], algorithms=[
                 os.environ['AUTH_ALGORITHM']], verify=False
@@ -124,7 +124,7 @@ def verify_refresh_token(db: Session, access_token, refresh_token) -> Tuple[Toke
             access_token, key=os.environ['SECRET_KEY'], algorithms=[
                 os.environ['AUTH_ALGORITHM']]
         )
-    except jwt.ExpiredSignatureError:
+    except jwt.ExpiredSignatureError:  # pragma: no cover
         data = jwt.decode(
             access_token, key=os.environ['SECRET_KEY'], algorithms=[
                 os.environ['AUTH_ALGORITHM']], verify=False
@@ -137,15 +137,9 @@ def verify_refresh_token(db: Session, access_token, refresh_token) -> Tuple[Toke
     if not verify_token(refresh_token, token.refresh_token):
         return TokenStatus.INVALID, None
     now = datetime.utcnow()
-    if token.refresh_token_expire_at < now:
+    if token.refresh_token_expire_at < now:  # pragma: no cover
         return TokenStatus.EXPIRED, None
     return TokenStatus.VALID, data
-
-
-def login_required(access_token: str):
-    db = next(get_db())
-    status, data = verify_access_token(db, access_token)
-    assert status == TokenStatus.VALID, exceptions.InvalidTokenException()
 
 
 def current_user(access_token: str = Header(...)) -> models.User:

@@ -51,9 +51,15 @@ class Post(Base):
 
     owner = relationship("User", back_populates="posts")
     upvotes = relationship(
-        "User", back_populates="upvoted_posts")
+        "User",
+        secondary=user_upvotes,
+        back_populates="upvoted_posts"
+    )
     downvotes = relationship(
-        "User", back_populates="downvoted_posts")
+        "User",
+        secondary=user_downvotes,
+        back_populates="downvoted_posts"
+    )
 
 
 class Token(Base):
