@@ -63,7 +63,7 @@ def custom_openapi(openapi_prefix: str):  # pragma: no cover
         return api.openapi_schema
     openapi_schema = get_openapi(
         title="Web Bash API",
-        version="v 2.0.3",
+        version="v 2.0.5",
         openapi_prefix=openapi_prefix,
         description="シェル芸 on API",
         routes=api.routes,
@@ -260,7 +260,7 @@ async def run(
         resp.exit_code = exit_code
         images = upload_images(run_id)
         resp.images = images
-    except TimeoutError:
+    except TimeoutError:  # pragma: no cover
         resp.stdout = ''
         resp.stderr = ''
         resp.exec_sec = 'Timeout'
@@ -327,7 +327,7 @@ async def write_source(run_id, code, filename, media=None):
     os.makedirs(f'/tmp/app/{run_id}/images')
     async with aiofiles.open(f'/tmp/app/{run_id}/src/{filename.value}', 'w') as f:
         await f.write(code)
-    if media:
+    if media:  # pragma: no cover
         for i, image in enumerate(media):
             async with aiofiles.open(f"/tmp/app/{run_id}/media/{i}", 'wb') as f:
                 await f.write(await image.read())

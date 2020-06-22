@@ -25,11 +25,13 @@ def test_run_return_422_without_source():
 
 def test_run_ls():
     resp = client.post('/run', {
-        'source': 'unko.shout unko|textimg -s;yes 高須クリニック',
+        'source': f'unko.shout unko|textimg -s;yes {"F"*40}',
     }, headers={"X-Forwarded-For": "192.168.0.5"})
     assert resp.status_code == 200
     assert 'stdout' in resp.json().keys()
     assert resp.json()['exit_code'] == '0'
+    resp = client.get(resp.json()['images'][0].replace('/api', ''))
+    assert resp.status_code == 200
 
 
 def test_get_redoc():

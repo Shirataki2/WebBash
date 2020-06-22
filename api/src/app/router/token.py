@@ -53,7 +53,7 @@ async def verify(
     status, data = verify_access_token(db, access_token)
     if status == TokenStatus.VALID:
         return {"detail": "Valid Token", "user_id": data['sub']}
-    elif status == TokenStatus.EXPIRED:
+    elif status == TokenStatus.EXPIRED:  # pragma: no cover
         raise exceptions.ExpiredTokenException()
     elif status == TokenStatus.INVALID:
         raise exceptions.InvalidTokenException()

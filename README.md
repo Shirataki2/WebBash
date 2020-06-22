@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![](https://img.shields.io/github/v/release/shirataki2/webbash)](https://github.com/Shirataki2/WebBash/releases)
-[![codecov](https://codecov.io/gh/Shirataki2/WebBash/branch/feature%2F%2324-add-tests/graph/badge.svg)](https://codecov.io/gh/Shirataki2/WebBash)
+[![codecov](https://codecov.io/gh/Shirataki2/WebBash/branch/develop/graph/badge.svg)](https://codecov.io/gh/Shirataki2/WebBash)
 
 [![](https://img.shields.io/website?down_message=Offline&label=Website&up_message=Online&url=https%3A%2F%2Fbash.chomama.jp)](https://bash.chomama.jp)
 [![](https://img.shields.io/security-headers?url=https%3A%2F%2Fbash.chomama.jp%2F)](https://securityheaders.com/?q=https%3A%2F%2Fbash.chomama.jp%2F&followRedirects=on)

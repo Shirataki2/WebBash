@@ -14,7 +14,6 @@ from app.database.crud import (
     TokenStatus,
     update_token,
     current_user,
-    login_required,
     get_users,
     get_user,
     get_user_posts,
