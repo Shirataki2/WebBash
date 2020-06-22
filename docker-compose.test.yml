@@ -4,7 +4,7 @@ services:
     build:
       context: ./frontend
       target: PROD
-    env_file: ./.env.prod
+    env_file: ./.env.test
     environment:
       NODE_ENV: production
     working_dir: /app
@@ -16,10 +16,10 @@ services:
       context: ./api
       target: PROD
     env_file:
-      - ./.env.prod
-      - ./.env.prod.secret
+      - ./.env.test
+      - ./.env.test.secret
     environment:
-      NODE_ENV: production
+      NODE_ENV: test
       API_ENV: TEST
     working_dir: /src
     volumes:
@@ -46,8 +46,8 @@ services:
     image: mongo
     restart: always
     env_file:
-      - ./.env.prod
-      - ./.env.prod.secret
+      - ./.env.test
+      - ./.env.test.secret
     volumes:
       - ./test/mongo:/data/db
   postgres:
@@ -55,5 +55,5 @@ services:
     ports:
       - 5432
     env_file:
-      - ./.env.prod
-      - ./.env.prod.secret
+      - ./.env.test
+      - ./.env.test.secret
