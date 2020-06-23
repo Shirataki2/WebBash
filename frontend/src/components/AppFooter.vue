@@ -1,5 +1,5 @@
 <template>
-  <v-footer>
+  <v-footer fixed>
     <v-col
       class="text-center ma-n2"
       style="font-size: 0.8em"
@@ -21,7 +21,9 @@
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
 
-@Component
-class ThemeSwitch extends Vue {}
-export default ThemeSwitch;
+@Component({
+  name: "AppFooter"
+})
+class AppFooter extends Vue {}
+export default AppFooter;
 </script>

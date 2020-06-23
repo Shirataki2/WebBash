@@ -1,23 +1,18 @@
 <template>
   <codemirror
-    :value="code"
-    @input="(newCode) => $emit('updateCode', newCode)"
+    :value="$store.state.code"
+    @input="(newCode) => { $store.dispatch('setCode', newCode) }"
     :options="{...cmOptions, ...{theme: $vuetify.theme.dark ? 'material' : 'mdn-like'}}"
   />
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from "vue-property-decorator";
+import { Vue, Component } from "vue-property-decorator";
 
-@Component({
-  model: {
-    prop: "code",
-    event: "updateCode"
-  }
-})
+@Component({})
 class Editor extends Vue {
-  @Prop({ type: String, default: "" })
-  code = "";
+  //@Prop({ type: String, default: "" })
+  //code = "";
 
   cmOptions = {
     tabSize: 4,

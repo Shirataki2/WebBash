@@ -12,6 +12,7 @@ services:
       - ./frontend:/app
     ports:
       - 4040:8080
+      - 4444:8000
     tty: true
   api:
     build:
