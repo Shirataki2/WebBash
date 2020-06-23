@@ -8,8 +8,24 @@
       <strong>Web Bash</strong>
     </v-toolbar-title>
     <v-spacer />
+    <v-btn
+      text
+      large
+      class="mr-n1 ml-n1"
+      style="font-weight: 900"
+    >
+      <v-icon>
+        mdi-forum
+      </v-icon>
+      <span class="hidden-xs-only">
+        TimeLine
+      </span>
+    </v-btn>
     <v-menu offset-y>
-      <template v-slot:activator="{on, attrs}">
+      <template
+        v-slot:activator="{on, attrs}"
+        class="pr-2"
+      >
         <div v-if="$store.state.isLogin">
           <v-avatar
             size="38"
@@ -19,7 +35,7 @@
             <img :src="$store.state.avatarUrl">
           </v-avatar>
           <span><b
-              class="ml-2"
+              class="ml-2 mr-2 hidden-xs-only"
               style="position: relative; top: 2px"
             >{{$store.state.username}}</b></span>
         </div>
@@ -35,7 +51,7 @@
           </v-btn>
         </div>
       </template>
-      <v-list>
+      <v-list class="body-1">
         <template v-if="$store.state.isLogin">
           <v-list-item @click="logout">
             <v-list-item-title>Logout</v-list-item-title>
@@ -161,16 +177,11 @@ class AppHeader extends Vue {
   helpDialog = false;
 
   async mounted() {
-    console.log("mounted");
     const accessToken = Cookies.get("access_token");
     const refreshToken = Cookies.get("refresh_token");
     const accessTokenExpire = Cookies.get("access_token_expire");
     // ログイン情報を問い合わせる
     if (accessToken && refreshToken && accessTokenExpire) {
-      console.log(accessToken);
-      console.log(refreshToken);
-      console.log(accessTokenExpire);
-      console.log(Date.now());
       console.log("Valid Access Token");
       // 基本情報の取得
       try {
@@ -180,7 +191,7 @@ class AppHeader extends Vue {
           }
         });
         this.login(data);
-      } catch (e) {
+      } catch {
         console.log("Expired Access Token");
         // Refresh Tokenでトークンの更新を図る
         const params = new FormData();
@@ -193,8 +204,6 @@ class AppHeader extends Vue {
             }
           });
           const accessToken = Cookies.get("access_token");
-          const refreshToken = Cookies.get("refresh_token");
-          const accessTokenExpire = Cookies.get("access_token_expire");
           const { data } = await this.$axios.get("/api/users/me", {
             headers: {
               "access-token": accessToken
@@ -202,9 +211,6 @@ class AppHeader extends Vue {
           });
 
           console.log("Update Access Token");
-          console.log(accessToken);
-          console.log(refreshToken);
-          console.log(accessTokenExpire);
           console.log(Date.now());
           this.login(data);
         } catch (e) {
