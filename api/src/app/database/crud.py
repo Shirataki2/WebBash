@@ -149,5 +149,5 @@ def current_user(access_token: str = Header(...)) -> models.User:
         return get_user_by_social_id(db, data['sub'])
     elif status == TokenStatus.INVALID:
         raise exceptions.InvalidTokenException()
-    elif status == TokenStatus.EXPIRED:
+    elif status == TokenStatus.EXPIRED:  # pragma: no cover
         raise exceptions.ExpiredTokenException()
