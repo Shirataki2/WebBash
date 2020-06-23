@@ -8,6 +8,62 @@
       <strong>Web Bash</strong>
     </v-toolbar-title>
     <v-spacer />
+    <v-btn
+      text
+      large
+      class="mr-n1 ml-n1"
+      style="font-weight: 900"
+    >
+      <v-icon>
+        mdi-forum
+      </v-icon>
+      <span class="hidden-xs-only">
+        TimeLine
+      </span>
+    </v-btn>
+    <v-menu offset-y>
+      <template
+        v-slot:activator="{on, attrs}"
+        class="pr-2"
+      >
+        <div v-if="$store.state.isLogin">
+          <v-avatar
+            size="38"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <img :src="$store.state.avatarUrl">
+          </v-avatar>
+          <span><b
+              class="ml-2 mr-2 hidden-xs-only"
+              style="position: relative; top: 2px"
+            >{{$store.state.username}}</b></span>
+        </div>
+        <div v-else>
+          <v-btn
+            icon
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>
+              mdi-account
+            </v-icon>
+          </v-btn>
+        </div>
+      </template>
+      <v-list class="body-1">
+        <template v-if="$store.state.isLogin">
+          <v-list-item @click="logout">
+            <v-list-item-title>Logout</v-list-item-title>
+          </v-list-item>
+        </template>
+        <template v-else>
+          <v-list-item @click="logInWithTwitter">
+            <v-list-item-title>Log In with Twitter</v-list-item-title>
+          </v-list-item>
+        </template>
+      </v-list>
+    </v-menu>
     <v-dialog
       v-model="historyDialog"
       scrollable
@@ -27,7 +83,7 @@
         <v-card-title>History (最新100件)</v-card-title>
         <v-divider></v-divider>
         <v-card-text class="pt-4">
-          <div v-if="history.length > 0">
+          <div v-if="reversedHistory.length > 0">
             <v-textarea
               readonly
               outlined
@@ -105,7 +161,8 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from "vue-property-decorator";
+import { Vue, Component } from "vue-property-decorator";
+import Cookies from "js-cookie";
 import About from "@/components/About.vue";
 import ThemeSwitch from "@/components/ThemeSwitch.vue";
 
@@ -115,28 +172,103 @@ import ThemeSwitch from "@/components/ThemeSwitch.vue";
     ThemeSwitch
   }
 })
-class AppFooter extends Vue {
+class AppHeader extends Vue {
   historyDialog = false;
   helpDialog = false;
-  @Prop({ type: Array, default: [] })
-  history!: string[];
-  @Prop({ type: String, default: "" })
-  code!: string;
+
+  async mounted() {
+    const accessToken = Cookies.get("access_token");
+    const refreshToken = Cookies.get("refresh_token");
+    const accessTokenExpire = Cookies.get("access_token_expire");
+    // ログイン情報を問い合わせる
+    if (accessToken && refreshToken && accessTokenExpire) {
+      console.log("Valid Access Token");
+      // 基本情報の取得
+      try {
+        const { data } = await this.$axios.get("/api/users/me", {
+          headers: {
+            "access-token": accessToken
+          }
+        });
+        this.login(data);
+      } catch {
+        console.log("Expired Access Token");
+        // Refresh Tokenでトークンの更新を図る
+        const params = new FormData();
+        params.append("access_token", accessToken);
+        params.append("refresh_token", refreshToken);
+        try {
+          await this.$axios.post("/api/token/refresh", params, {
+            headers: {
+              "content-type": "multipart/form-data"
+            }
+          });
+          const accessToken = Cookies.get("access_token");
+          const { data } = await this.$axios.get("/api/users/me", {
+            headers: {
+              "access-token": accessToken
+            }
+          });
+
+          console.log("Update Access Token");
+          console.log(Date.now());
+          this.login(data);
+        } catch (e) {
+          console.log("Invalid Access Token");
+          await this.logout();
+          console.error(e);
+        }
+      }
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  login(data: any) {
+    console.log("Login");
+    this.$store.dispatch("setLogin", true);
+    this.$store.dispatch("setUsername", data.username);
+    this.$store.dispatch("setAvatarUrl", data.avater_url);
+  }
+
+  async logout() {
+    console.log("Logout");
+    this.$axios.get("/api/oauth/logout");
+    this.$store.dispatch("setLogin", false);
+    this.$store.dispatch("setUsername", "");
+    this.$store.dispatch("setAvatarUrl", "");
+  }
 
   get reversedHistory() {
-    return this.history.slice().reverse();
+    const history = this.$store.state.history;
+    return history.slice().reverse();
+  }
+
+  get isLogin() {
+    return this.$store.state.isLogin;
+  }
+
+  get code() {
+    return this.$store.state.code;
   }
 
   onHistoryClick(code: string) {
-    this.$emit("selected", code);
+    this.$store.dispatch("setCode", code);
     this.historyDialog = false;
   }
 
   deleteHistory() {
     this.historyDialog = false;
     localStorage.removeItem("code/history");
-    this.$emit("deleted");
+    this.$store.dispatch("deleteAllHistory");
+  }
+
+  async logInWithTwitter() {
+    const redirectUri =
+      process.env.NODE_ENV === "development"
+        ? "http://192.168.10.19:5919/api/oauth/login"
+        : "/api/oauth/login";
+    location.href = redirectUri;
   }
 }
-export default AppFooter;
+export default AppHeader;
 </script>
