@@ -4,7 +4,7 @@
     color="primary"
     dark
   >
-    <v-toolbar-title>
+    <v-toolbar-title @click="go('/')">
       <strong>Web Bash</strong>
     </v-toolbar-title>
     <v-spacer />
@@ -13,6 +13,8 @@
       large
       class="mr-n1 ml-n1"
       style="font-weight: 900"
+      v-if="$store.state.isLogin"
+      href="/timeline"
     >
       <v-icon>
         mdi-forum
@@ -198,17 +200,19 @@ class AppHeader extends Vue {
         params.append("access_token", accessToken);
         params.append("refresh_token", refreshToken);
         try {
-          await this.$axios.post("/api/token/refresh", params, {
-            headers: {
-              "content-type": "multipart/form-data"
-            }
-          });
           const accessToken = Cookies.get("access_token");
-          const { data } = await this.$axios.get("/api/users/me", {
-            headers: {
-              "access-token": accessToken
-            }
-          });
+          const [{ data }, ignore] = await Promise.all([
+            this.$axios.get("/api/users/me", {
+              headers: {
+                "access-token": accessToken
+              }
+            }),
+            this.$axios.post("/api/token/refresh", params, {
+              headers: {
+                "content-type": "multipart/form-data"
+              }
+            })
+          ]);
 
           console.log("Update Access Token");
           console.log(Date.now());
@@ -268,6 +272,10 @@ class AppHeader extends Vue {
         ? "http://192.168.10.19:5919/api/oauth/login"
         : "/api/oauth/login";
     location.href = redirectUri;
+  }
+
+  go(loc: string) {
+    window.location.href = loc;
   }
 }
 export default AppHeader;
