@@ -8,6 +8,14 @@ from datetime import datetime
 import uuid
 
 
+follow_table = Table('follows', Base.metadata,
+                     Column('followee_id', UUIDType(binary=False),
+                            ForeignKey('users.id')),
+                     Column('follower_id', UUIDType(binary=False),
+                            ForeignKey('users.id')),
+                     )
+
+
 class User(Base):
     __tablename__ = 'users'
     id = Column(UUIDType(binary=False), primary_key=True,
@@ -22,6 +30,13 @@ class User(Base):
         "Post", back_populates="upvotes")
     downvoted_posts = relationship(
         "Post", back_populates="downvotes")
+    followee = relationship(
+        "User",
+        lambda: follow_table,
+        primaryjoin=lambda: User.id == follow_table.c.follower_id,
+        secondaryjoin=lambda: User.id == follow_table.c.followee_id,
+        backref="follower"
+    )
 
 
 user_upvotes = Table('user_upvotes', Base.metadata,
