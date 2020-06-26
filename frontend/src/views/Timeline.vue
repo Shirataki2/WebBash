@@ -94,7 +94,7 @@
                 </p>
                 <ImageViewer
                   class="mt-n3 mb-n3"
-                  :images="post.generated_images"
+                  :images="post.generated_images.map((image) => image.url)"
                 />
               </v-card-text>
             </v-card>
