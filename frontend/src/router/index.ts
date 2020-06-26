@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import Home from '../views/Home.vue'
 import TimeLine from '../views/Timeline.vue'
+import Post from '../views/Post.vue'
 
 Vue.use(VueRouter)
 
@@ -15,6 +16,11 @@ const routes: Array<RouteConfig> = [
     path: '/timeline',
     name: 'TimeLine',
     component: TimeLine
+  },
+  {
+    path: '/user/:user_id/post/:post_id',
+    name: 'Post',
+    component: Post
   }
 ]
 
