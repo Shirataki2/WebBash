@@ -63,7 +63,7 @@ def custom_openapi(openapi_prefix: str):  # pragma: no cover
         return api.openapi_schema
     openapi_schema = get_openapi(
         title="Web Bash API",
-        version="v 2.0.5",
+        version="v 2.1.0",
         openapi_prefix=openapi_prefix,
         description="シェル芸 on API",
         routes=api.routes,
@@ -101,6 +101,7 @@ class ShellgeiResponse(BaseModel):
                                               'The images saved in the `/images` folder during the execution of '
                                               'the shell script are automatically sent to the server as It will '
                                               'be uploaded.\n\nThis field contains the URL to access these images.'))
+    media: List[str] = Body([], description=(''))
 
 
 class PingResponse(BaseModel):
@@ -247,7 +248,7 @@ async def run(
         raise HTTPException(503)
     run_id = secrets.token_hex(8)
     files = [f for f in [f0, f1, f2, f3] if f is not None]
-    await write_source(run_id, source, filename, files)
+    media = await write_source(run_id, source, filename, files)
     container = create_container(image, run_id, docker_prepare_conf)
     resp = ShellgeiResponse()
     try:
@@ -260,12 +261,14 @@ async def run(
         resp.exit_code = exit_code
         images = upload_images(run_id)
         resp.images = images
+        resp.media = media
     except TimeoutError:  # pragma: no cover
         resp.stdout = ''
         resp.stderr = ''
         resp.exec_sec = 'Timeout'
         resp.exit_code = ''
         resp.images = []
+        resp.media = []
     background_tasks.add_task(clean_container, container, run_id, [
                               '/src', '/images', '/media'])
     return resp
@@ -327,10 +330,17 @@ async def write_source(run_id, code, filename, media=None):
     os.makedirs(f'/tmp/app/{run_id}/images')
     async with aiofiles.open(f'/tmp/app/{run_id}/src/{filename.value}', 'w') as f:
         await f.write(code)
+    fps = []
     if media:  # pragma: no cover
         for i, image in enumerate(media):
             async with aiofiles.open(f"/tmp/app/{run_id}/media/{i}", 'wb') as f:
                 await f.write(await image.read())
+            ext = os.path.splitext(image.filename)[1]
+            fp = f'/images/{run_id}_r{i}{ext}'
+            shutil.copy(f"/tmp/app/{run_id}/media/{i}", fp)
+            fps.append(
+                (fastapi_config['openapi_prefix'] + fp).replace('//', '/'))
+    return fps
 
 
 def create_container(image, run_id, conf):

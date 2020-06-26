@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 
 
-class InvalidTokenException(HTTPException):
+class InvalidTokenException(HTTPException):  # pragma: no cover
     def __init__(self, headers: dict = None):
         status_code = 401
         detail = 'Requested token is invalid.'
@@ -22,7 +22,7 @@ class UnauthorizedUserException(HTTPException):  # pragma: no cover
         super().__init__(status_code, detail, headers)
 
 
-class ForbiddenAccessException(HTTPException):
+class ForbiddenAccessException(HTTPException):  # pragma: no cover
     def __init__(self, headers: dict = None):
         status_code = 403
         detail = 'You do not have permission to access.'
@@ -36,7 +36,7 @@ class MissingRequestTokenException(HTTPException):  # pragma: no cover
         super().__init__(status_code, detail, headers)
 
 
-class UserNotFoundException(HTTPException):
+class UserNotFoundException(HTTPException):  # pragma: no cover
     def __init__(self, headers: dict = None):
         status_code = 404
         detail = 'User not Found.'

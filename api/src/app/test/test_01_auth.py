@@ -115,7 +115,12 @@ def test_create_post(access_token):
     resp = client.post('/posts/', json={
         'title': 'hoge',
         'description': 'fuga',
-        'main': 'piyo'
+        'main': 'piyo',
+        'stdout': 'ooo',
+        'stderr': 'ppp',
+        'exitcode': 'kfc',
+        'posted_images': ['a'],
+        'generated_images': ['f'],
     }, headers={
         "access-token": access_token['access_token']
     })

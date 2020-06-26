@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Any, ForwardRef
 from pydantic import BaseModel
 from datetime import datetime
 import uuid
@@ -8,6 +8,11 @@ class PostBase(BaseModel):
     title: str
     description: str
     main: str
+    stdout: str
+    stderr: str
+    exitcode: str
+    posted_images: List[Any]
+    generated_images: List[Any]
 
 
 class PostCreate(PostBase):
@@ -19,6 +24,8 @@ class Post(PostBase):
     owner_id: uuid.UUID
     upvotes: List[uuid.UUID] = []
     downvotes: List[uuid.UUID] = []
+    owner: "User"
+    post_at: datetime
 
     class Config:
         orm_mode = True
@@ -59,9 +66,9 @@ class User(UserBase):
     username: str
     avater_url: str
     banned: bool = False
-    posts: List[uuid.UUID]
-    upvoted_posts: List[uuid.UUID]
-    downvoted_posts: List[uuid.UUID]
 
     class Config:
         orm_mode = True
+
+
+Post.update_forward_refs()

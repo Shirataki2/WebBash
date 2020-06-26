@@ -164,7 +164,7 @@
 
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
-import Cookies from "js-cookie";
+import checkToken from "@/utils/check_token";
 import About from "@/components/About.vue";
 import ThemeSwitch from "@/components/ThemeSwitch.vue";
 
@@ -179,50 +179,11 @@ class AppHeader extends Vue {
   helpDialog = false;
 
   async mounted() {
-    const accessToken = Cookies.get("access_token");
-    const refreshToken = Cookies.get("refresh_token");
-    const accessTokenExpire = Cookies.get("access_token_expire");
-    // ログイン情報を問い合わせる
-    if (accessToken && refreshToken && accessTokenExpire) {
-      console.log("Valid Access Token");
-      // 基本情報の取得
-      try {
-        const { data } = await this.$axios.get("/api/users/me", {
-          headers: {
-            "access-token": accessToken
-          }
-        });
-        this.login(data);
-      } catch {
-        console.log("Expired Access Token");
-        // Refresh Tokenでトークンの更新を図る
-        const params = new FormData();
-        params.append("access_token", accessToken);
-        params.append("refresh_token", refreshToken);
-        try {
-          const accessToken = Cookies.get("access_token");
-          const [{ data }, ignore] = await Promise.all([
-            this.$axios.get("/api/users/me", {
-              headers: {
-                "access-token": accessToken
-              }
-            }),
-            this.$axios.post("/api/token/refresh", params, {
-              headers: {
-                "content-type": "multipart/form-data"
-              }
-            })
-          ]);
-
-          console.log("Update Access Token");
-          console.log(Date.now());
-          this.login(data);
-        } catch (e) {
-          console.log("Invalid Access Token");
-          await this.logout();
-          console.error(e);
-        }
-      }
+    const data = await checkToken(this);
+    if (data) {
+      this.login(data);
+    } else {
+      await this.logout();
     }
   }
 

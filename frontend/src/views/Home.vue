@@ -50,6 +50,11 @@
                   ]"
                   />
                 </v-form>
+                <ImageViewer
+                  v-if="previewImages !== []"
+                  :images="previewImages"
+                  disable-download
+                />
               </v-col>
             </v-row>
           </v-col>
@@ -72,6 +77,14 @@
                   </v-card-text>
                   <v-card-subtitle style="font-family: monospace">[EXITCODE]</v-card-subtitle>
                   <v-card-text style="font-family: monospace">{{ exitCode }}</v-card-text>
+                  <SaveForm
+                    :visible="exitCode !== '' && $store.state.isLogin"
+                    :images="images"
+                    :media="mediaPath"
+                    :stdout="stdout"
+                    :stderr="stderr"
+                    :exitcode="exitCode"
+                  />
                 </v-card>
               </v-col>
             </v-row>
@@ -79,18 +92,21 @@
         </v-row>
       </v-container>
       <v-snackbar
-        v-model="snackbar"
-        :color="snackbarType"
+        v-model="$store.state.snackbar"
+        :color="$store.state.snackbarType"
         top
       >
-        <strong>{{ message }}</strong>
-        <v-btn
-          dark
-          text
-          @click="snackbar = false"
-        >
-          Close
-        </v-btn>
+        <strong>{{ $store.state.message }}</strong>
+        <template v-slot:action="{ attrs }">
+          <v-btn
+            dark
+            text
+            v-bind="attrs"
+            @click="$store.commit('SET_SNACKBAR', false)"
+          >
+            Close
+          </v-btn>
+        </template>
       </v-snackbar>
     </v-main>
   </div>
@@ -99,6 +115,7 @@
 <script lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Editor from "@/components/Editor.vue";
+import SaveForm from "@/components/SaveForm.vue";
 import ImageViewer from "@/components/ImageViewer.vue";
 import { Vue, Component } from "vue-property-decorator";
 
@@ -106,7 +123,8 @@ import { Vue, Component } from "vue-property-decorator";
   name: "home",
   components: {
     Editor,
-    ImageViewer
+    ImageViewer,
+    SaveForm
   }
 })
 class Home extends Vue {
@@ -118,13 +136,11 @@ class Home extends Vue {
   // history: string[] = [];
   images: string[] = [];
   media: File[] = [];
+  previewImages: string[] = [];
+  mediaPath: string[] = [];
 
   isload = false;
   fileValid = false;
-
-  snackbar = false;
-  snackbarType = "error";
-  message = "";
 
   get disabled() {
     return this.$store.state.code === "";
@@ -133,11 +149,15 @@ class Home extends Vue {
   get getLenLimit() {
     const len = this.getLen(this.$store.state.code);
     return `${len} 文字 (Twitter(270文字): ${Math.round((len / 270) * 10000) /
-      100}% / 上限(4000文字): ${Math.round((len / 4000) * 10000) / 100}%)`;
+      100}% | 上限(4000文字): ${Math.round((len / 4000) * 10000) / 100}%)`;
   }
 
   onFileSelected(e: Array<File>) {
+    this.previewImages = [];
     this.media = e;
+    e.forEach(img => {
+      this.previewImages.push(URL.createObjectURL(img));
+    });
   }
 
   mounted() {
@@ -209,6 +229,7 @@ class Home extends Vue {
         data.exit_code === 124 ? " (timeout)" : ""
       })`;
       this.images = data.images;
+      this.mediaPath = data.media;
     } catch (e) {
       const status: number = e.response.status;
       if (status === 503) {
@@ -227,16 +248,12 @@ class Home extends Vue {
   }
 
   onError(message: string) {
-    this.snackbar = true;
-    this.snackbarType = "error";
-    this.message = message;
+    this.$store.dispatch("setMessage", { message, snackbarType: "error" });
     this.isload = false;
   }
 
   onSuccess(message: string) {
-    this.snackbar = true;
-    this.snackbarType = "success";
-    this.message = message;
+    this.$store.dispatch("setMessage", { message, snackbarType: "success" });
     this.isload = false;
   }
 
