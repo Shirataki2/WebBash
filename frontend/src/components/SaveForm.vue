@@ -10,11 +10,11 @@
           color="success"
           block
           v-on="on"
-        >Save</v-btn>
+        >Post</v-btn>
       </template>
       <v-card>
         <v-card-title>
-          <span class="headline">Save</span>
+          <span class="headline">New Post</span>
         </v-card-title>
         <v-card-text>
           <v-form
@@ -74,6 +74,8 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
+import Cookies from "js-cookie";
+/* eslint-disable @typescript-eslint/camelcase */
 
 @Component({
   name: "SaveForm"
@@ -81,15 +83,38 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 class SaveForm extends Vue {
   @Prop({ type: Boolean, default: false })
   visible!: boolean;
+  @Prop({ type: Array, default: () => [] })
+  images!: string[];
+  @Prop({ type: Array, default: () => [] })
+  media!: string[];
   saveDialog = false;
   valid = false;
   title = "";
   description = "";
 
-  onCodeSubmit() {
-    this.title = "";
-    this.description = "";
-    this.saveDialog = false;
+  async onCodeSubmit() {
+    try {
+      const accessToken = Cookies.get("access_token");
+      await this.$axios.post(
+        "/api/posts/",
+        {
+          title: this.title,
+          description: this.description,
+          main: this.$store.state.code,
+          posted_images: this.media,
+          generated_images: this.images
+        },
+        {
+          headers: {
+            "access-token": accessToken
+          }
+        }
+      );
+    } finally {
+      this.title = "";
+      this.description = "";
+      this.saveDialog = false;
+    }
   }
 
   onCodeCencel() {

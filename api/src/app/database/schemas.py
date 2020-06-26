@@ -60,9 +60,9 @@ class User(UserBase):
     username: str
     avater_url: str
     banned: bool = False
-    posts: List[uuid.UUID]
-    upvoted_posts: List[uuid.UUID]
-    downvoted_posts: List[uuid.UUID]
+    posts: List[Post] = []
+    upvoted_posts: List[Post] = []
+    downvoted_posts: List[Post] = []
 
     class Config:
         orm_mode = True

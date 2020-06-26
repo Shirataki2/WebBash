@@ -77,7 +77,11 @@
                   </v-card-text>
                   <v-card-subtitle style="font-family: monospace">[EXITCODE]</v-card-subtitle>
                   <v-card-text style="font-family: monospace">{{ exitCode }}</v-card-text>
-                  <SaveForm :visible="exitCode !== '' && $store.state.isLogin" />
+                  <SaveForm
+                    :visible="exitCode !== '' && $store.state.isLogin"
+                    :images="images"
+                    :media="mediaPath"
+                  />
                 </v-card>
               </v-col>
             </v-row>
@@ -142,7 +146,7 @@ class Home extends Vue {
   get getLenLimit() {
     const len = this.getLen(this.$store.state.code);
     return `${len} 文字 (Twitter(270文字): ${Math.round((len / 270) * 10000) /
-      100}% / 上限(4000文字): ${Math.round((len / 4000) * 10000) / 100}%)`;
+      100}% | 上限(4000文字): ${Math.round((len / 4000) * 10000) / 100}%)`;
   }
 
   onFileSelected(e: Array<File>) {

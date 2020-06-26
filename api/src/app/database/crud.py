@@ -45,6 +45,16 @@ def get_users(db: Session, skip: int = 0, limit: int = 10) -> List[schemas.User]
 def create_post(db: Session, user: schemas.User, post: schemas.PostCreate):
     db_post = models.Post(title=post.title, description=post.description,
                           main=post.main, owner_id=user.id)
+    for img in post.posted_images:
+        db_image = models.PostedImage(url=img, post_id=db_post.id)
+        db.add(db_image)
+        db.commit()
+        db.refresh(db_image)
+    for img in post.generated_images:
+        db_image = models.GeneratedImage(url=img, post_id=db_post.id)
+        db.add(db_image)
+        db.commit()
+        db.refresh(db_image)
     db.add(db_post)
     db.commit()
     db.refresh(db_post)
