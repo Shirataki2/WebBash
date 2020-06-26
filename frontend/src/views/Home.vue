@@ -46,8 +46,8 @@
                     label="Media Input (4ファイルまで/各2MBまで)"
                     @change="onFileSelected"
                     :rules="[
-                    files => !files || !files.some(file => file.size > 2097152) || 'Image size should be less than 2 MB!'
-                  ]"
+                      files => !files || !files.some(file => file.size > 2097152) || 'Image size should be less than 2 MB!'
+                    ]"
                   />
                 </v-form>
                 <ImageViewer
@@ -161,8 +161,6 @@ class Home extends Vue {
   }
 
   mounted() {
-    const client = new XMLHttpRequest();
-    client.getResponseHeader("");
     const history = localStorage.getItem("code/history");
     if (history) {
       this.$store.dispatch("setHistory", JSON.parse(history));
@@ -175,6 +173,21 @@ class Home extends Vue {
         if (!this.isload) this.submit();
       }
     };
+  }
+
+  beforeRouteEnter(_route: any, _redirect: any, next: any) {
+    document.onkeydown = (e: KeyboardEvent) => {
+      if (
+        (e.ctrlKey && e.key === "Enter") ||
+        (e.metaKey && e.key === "Enter")
+      ) {
+        if (!this.isload) this.submit();
+      }
+    };
+    next((vm: this) => {
+      const history = localStorage.getItem("code/history");
+      if (history) vm.$store.dispatch("setHistory", JSON.parse(history));
+    });
   }
 
   resetResult() {

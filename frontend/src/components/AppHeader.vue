@@ -4,7 +4,7 @@
     color="primary"
     dark
   >
-    <v-toolbar-title @click="go('/')">
+    <v-toolbar-title @click="$router.push('/').catch(() => {})">
       <strong>Web Bash</strong>
     </v-toolbar-title>
     <v-spacer />
@@ -14,7 +14,7 @@
       class="mr-n1 ml-n1"
       style="font-weight: 900"
       v-if="$store.state.isLogin"
-      href="/timeline"
+      @click="$router.push('/timeline')"
     >
       <v-icon>
         mdi-forum
@@ -233,10 +233,6 @@ class AppHeader extends Vue {
         ? "http://192.168.10.19:5919/api/oauth/login"
         : "/api/oauth/login";
     location.href = redirectUri;
-  }
-
-  go(loc: string) {
-    window.location.href = loc;
   }
 }
 export default AppHeader;

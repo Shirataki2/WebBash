@@ -3,62 +3,7 @@
     <v-main class="mt-n3 pb-7">
       <v-container>
         <v-row>
-          <v-col
-            style="height: 100%"
-            cols="2"
-            sm="1"
-            md="4"
-            lg="3"
-          >
-            <v-list
-              flat
-              nav
-              style="background-color: transparent;position: fixed"
-            >
-              <v-list-item-group style="background-color: transparent">
-                <v-list-item>
-                  <v-list-item-icon>
-                    <v-badge content="β版">
-                      <v-icon class="sidebar">mdi-home</v-icon>
-                    </v-badge>
-                  </v-list-item-icon>
-                  <v-list-item-content class="hidden-sm-and-down">
-                    <v-list-item-title class="sidebar">すべての投稿</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-icon>
-                    <v-badge content="開発中">
-                      <v-icon class="sidebar">mdi-bell</v-icon>
-                    </v-badge>
-                  </v-list-item-icon>
-                  <v-list-item-content class="hidden-sm-and-down">
-                    <v-list-item-title class="sidebar">通知</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-icon>
-                    <v-badge content="開発中">
-                      <v-icon class="sidebar">mdi-account-heart</v-icon>
-                    </v-badge>
-                  </v-list-item-icon>
-                  <v-list-item-content class="hidden-sm-and-down">
-                    <v-list-item-title class="sidebar">フォロー中の投稿</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-icon>
-                    <v-badge content="開発中">
-                      <v-icon class="sidebar">mdi-account</v-icon>
-                    </v-badge>
-                  </v-list-item-icon>
-                  <v-list-item-content class="hidden-sm-and-down">
-                    <v-list-item-title class="sidebar">ユーザー</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list-item-group>
-            </v-list>
-          </v-col>
+          <SideBar />
           <v-col
             cols="10"
             sm="11"
@@ -83,15 +28,20 @@
                 </span>
               </v-card-title>
               <v-card-text>
-                <p class="subtitle-1 font-weight-bold mt-n2 mb-n1">{{ post.title }}</p>
-                <p class="mt-2 mb-1 ml-3 mr-3">{{ post.description }}</p>
-                <v-divider />
-                <p
-                  class="mt-2 mb-n3"
-                  style="font-family: monospace;white-space: pre-line; word-wrap:break-word;font-size:1em"
+                <div
+                  @click="$router.push(`/user/${post.owner.id}/post/${post.id}`).catch(() => {})"
+                  style="cursor: pointer"
                 >
-                  {{ previewResult(post.stdout) }}
-                </p>
+                  <p class="subtitle-1 font-weight-bold mt-n2 mb-n1">{{ post.title }}</p>
+                  <p class="mt-2 mb-1 ml-3 mr-3">{{ post.description }}</p>
+                  <v-divider />
+                  <p
+                    class="mt-2 mb-n3"
+                    style="font-family: monospace;white-space: pre-line; word-wrap:break-word;font-size:1em"
+                  >
+                    {{ previewResult(post.stdout) }}
+                  </p>
+                </div>
                 <ImageViewer
                   class="mt-n3 mb-n3"
                   :images="post.generated_images.map((image) => image.url)"
@@ -108,18 +58,39 @@
 <script lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Vue, Component } from "vue-property-decorator";
+import SideBar from "@/components/SideBar.vue";
 import Cookie from "js-cookie";
 import checkToken from "@/utils/check_token";
+import parseDate from "@/utils/parseDate";
+import axios from "axios";
 import ImageViewer from "@/components/ImageViewer.vue";
 
 @Component({
   name: "timeline",
   components: {
-    ImageViewer
+    ImageViewer,
+    SideBar
   }
 })
 class TimeLine extends Vue {
   posts: any[] = [];
+
+  async beforeRouteEnter(_route: any, _from: any, next: any) {
+    try {
+      await checkToken(this);
+      const accessToken = Cookie.get("access_token");
+      const { data } = await axios.get("/api/posts/", {
+        headers: {
+          "access-token": accessToken
+        }
+      });
+      next((vm: this) => {
+        vm.posts = data;
+      });
+    } finally {
+      1;
+    }
+  }
 
   async mounted() {
     try {
@@ -137,25 +108,7 @@ class TimeLine extends Vue {
   }
 
   parseDate(date: string) {
-    const postAt = new Date(date);
-    const offset = new Date().getTimezoneOffset();
-    const elapsed =
-      new Date(Date.now()).getTime() - postAt.getTime() + offset * 60000;
-    if (elapsed < 60 * 1000) {
-      return `${Math.floor(elapsed / 1000)} 秒前`;
-    }
-    if (elapsed < 60 * 60 * 1000) {
-      return `${Math.floor(elapsed / (60 * 1000))} 分前`;
-    }
-    if (elapsed < 24 * 60 * 60 * 1000) {
-      return `${Math.floor(elapsed / (60 * 60 * 1000))} 時間前`;
-    }
-    const localdate = new Date(postAt.getTime() + offset * 60000);
-    let d = "";
-    if (localdate.getFullYear() !== new Date(Date.now()).getFullYear())
-      d += `${localdate.getFullYear()}年 `;
-    d += `${localdate.getMonth() + 1}月${localdate.getDate()}日`;
-    return d;
+    return parseDate(date);
   }
 
   previewResult(s: string) {
@@ -179,8 +132,11 @@ export default TimeLine;
 </script>
 
 <style scoped>
-.sidebar {
-  font-weight: 900;
-  font-size: 1.3em;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>
