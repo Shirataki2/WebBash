@@ -53,7 +53,7 @@ async def access_token():  # pragma: no cover
 
 
 @pytest.mark.asyncio
-async def test_create_user():
+async def test_create_user():  # pragma: no cover
     # REGISTER Token
     access_token_expire = timedelta(
         minutes=int(os.environ['ACCESS_TOKEN_EXPIRE_MINUTES'])
@@ -89,14 +89,14 @@ async def test_create_user():
 
 def test_access_user(access_token):
     resp = client.get('/users/me', headers={
-        "access-token": access_token['access_token'].decode('utf-8')
+        "access-token": access_token['access_token']
     })
     assert resp.status_code == 200
 
 
 def test_get_users(access_token):
     resp = client.get('/users/', headers={
-        "access-token": access_token['access_token'].decode('utf-8')
+        "access-token": access_token['access_token']
     })
     assert resp.status_code == 200
 
@@ -106,7 +106,7 @@ def test_update_user(access_token):
         "username": "GSGSGS",
         "avater_url": "HOGEEEEE"
     }, headers={
-        "access-token": access_token['access_token'].decode('utf-8')
+        "access-token": access_token['access_token']
     })
     assert resp.status_code == 204
 
@@ -115,21 +115,31 @@ def test_create_post(access_token):
     resp = client.post('/posts/', json={
         'title': 'hoge',
         'description': 'fuga',
-        'main': 'piyo'
+        'main': 'piyo',
+        'stdout': 'ooo',
+        'stderr': 'ppp',
+        'exitcode': 'kfc',
+        'posted_images': ['a'],
+        'generated_images': ['f'],
     }, headers={
-        "access-token": access_token['access_token'].decode('utf-8')
+        "access-token": access_token['access_token']
     })
     assert resp.status_code == 204
 
 
 def test_refresh_token(access_token):
     resp = client.post('/token/refresh', data={
-        "access_token": access_token['access_token'].decode('utf-8'),
+        "access_token": access_token['access_token'],
         "refresh_token": access_token['refresh_token'],
     })
     assert resp.status_code == 200
     resp = client.post('/token/refresh', data={
-        "access_token": access_token['access_token'].decode('utf-8'),
+        "access_token": access_token['access_token'],
+        "refresh_token": access_token['refresh_token'][:-1],
+    })
+    assert resp.status_code == 401
+    resp = client.post('/token/refresh', data={
+        "access_token": access_token['access_token'][:-1],
         "refresh_token": access_token['refresh_token'][:-1],
     })
     assert resp.status_code == 401
@@ -150,11 +160,11 @@ def test_get_access_token(access_token):
 
 def test_verify_token(access_token):
     resp = client.post('/token/verify', data={
-        "access_token": access_token['access_token'].decode('utf-8'),
+        "access_token": access_token['access_token'],
     })
     assert resp.status_code == 200
     resp = client.post('/token/verify', data={
-        "access_token": access_token['access_token'].decode('utf-8')[:-1],
+        "access_token": access_token['access_token'][:-1],
     })
     assert resp.status_code == 401
 

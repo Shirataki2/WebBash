@@ -1,12 +1,12 @@
 <template>
-  <v-footer>
+  <v-footer fixed>
     <v-col
       class="text-center ma-n2"
       style="font-size: 0.8em"
       padless
       cols="12"
     >
-      Version 2.0.5 |
+      Version 2.1.0 |
       &copy; {{ new Date().getFullYear() }} — <strong>FF</strong> (Twitter: <a
         target="_blank"
         href="https://twitter.com/fujifog"
@@ -21,7 +21,9 @@
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
 
-@Component
-class ThemeSwitch extends Vue {}
-export default ThemeSwitch;
+@Component({
+  name: "AppFooter"
+})
+class AppFooter extends Vue {}
+export default AppFooter;
 </script>

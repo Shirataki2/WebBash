@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
 from typing import List, Dict, Union, Any, Tuple
 from datetime import datetime, timedelta
 from fastapi import Form, Header
@@ -44,10 +45,21 @@ def get_users(db: Session, skip: int = 0, limit: int = 10) -> List[schemas.User]
 
 def create_post(db: Session, user: schemas.User, post: schemas.PostCreate):
     db_post = models.Post(title=post.title, description=post.description,
-                          main=post.main, owner_id=user.id)
+                          main=post.main, owner_id=user.id, stdout=post.stdout,
+                          stderr=post.stderr, exitcode=post.exitcode)
     db.add(db_post)
     db.commit()
     db.refresh(db_post)
+    for img in post.posted_images:
+        db_image = models.PostedImage(url=img, post_id=db_post.id)
+        db.add(db_image)
+        db.commit()
+        db.refresh(db_image)
+    for img in post.generated_images:
+        db_image = models.GeneratedImage(url=img, post_id=db_post.id)
+        db.add(db_image)
+        db.commit()
+        db.refresh(db_image)
     return db_post
 
 
@@ -60,11 +72,11 @@ def create_user(db: Session, user: schemas.UserCreate) -> schemas.User:  # pragm
 
 
 def get_all_posts(db: Session, skip: int = 0, limit: int = 10) -> List[schemas.Post]:
-    return db.query(models.Post).offset(skip).limit(limit).all()
+    return db.query(models.Post).order_by(desc(models.Post.post_at)).offset(skip).limit(limit).all()
 
 
 def get_user_posts(db: Session, user_id: uuid.UUID, skip: int = 0, limit: int = 10) -> List[schemas.Post]:
-    return db.query(models.Post).join(models.User).filter(models.User.id == user_id).offset(skip).limit(limit).all()
+    return db.query(models.Post).join(models.User).filter(models.User.id == user_id).order_by(desc(models.Post.post_at)).offset(skip).limit(limit).all()
 
 
 def get_user_post(db: Session, user_id: uuid.UUID, post_id: uuid.UUID) -> schemas.Post:
@@ -149,5 +161,5 @@ def current_user(access_token: str = Header(...)) -> models.User:
         return get_user_by_social_id(db, data['sub'])
     elif status == TokenStatus.INVALID:
         raise exceptions.InvalidTokenException()
-    elif status == TokenStatus.EXPIRED:
+    elif status == TokenStatus.EXPIRED:  # pragma: no cover
         raise exceptions.ExpiredTokenException()

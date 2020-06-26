@@ -1,7 +1,7 @@
 from starlette.requests import Request
-from fastapi import APIRouter, HTTPException, Depends, Body, Form
+from fastapi import APIRouter, HTTPException, Depends, Body, Form, Response
 from aiohttp import ClientSession
-from datetime import timedelta
+from datetime import timedelta, datetime
 from sqlalchemy.orm import Session
 from app import exceptions
 from app.database.crud import (
@@ -61,6 +61,7 @@ async def verify(
 
 @router.post('/refresh')
 async def refresh(
+    response: Response,
     access_token: str = Form(...),
     refresh_token: str = Form(...),
     db: Session = Depends(get_db)
@@ -73,6 +74,12 @@ async def refresh(
             )
             update_token(
                 db, db_user, token['refresh_token']
+            )
+            response.set_cookie("access_token", token['access_token'])
+            response.set_cookie("refresh_token", token['refresh_token'])
+            response.set_cookie(
+                "access_token_expire",
+                (token['expires_in'] + datetime.now().timestamp()) * 1000
             )
             return token
         else:

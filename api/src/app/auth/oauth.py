@@ -54,7 +54,7 @@ def create_access_token(user_id: int, access_token_expire: timedelta):
     )
     refresh_token = secrets.token_hex(128)
     return {
-        "access_token": access_token,
+        "access_token": access_token.decode('utf-8'),
         "refresh_token": refresh_token,
         "expires_in": access_token_expire.total_seconds()
     }

@@ -6,6 +6,9 @@ import axios from 'axios';
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
+axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
+axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
+
 const config = {
   // baseURL: process.env.baseURL || process.env.apiUrl || ""
   // timeout: 60 * 1000, // Timeout
@@ -37,7 +40,7 @@ _axios.interceptors.response.use(
   },
 );
 
-const Plugin: PluginObject<any> = {
+const Plugin: PluginObject<unknown> = {
   install: (Vue) => {
     Vue.$axios = _axios;
   },

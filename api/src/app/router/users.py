@@ -33,7 +33,9 @@ async def my_account(
     db: Session = Depends(get_db),
     user: schemas.User = Depends(current_user)
 ):
-    return get_user(db, user.id)
+    user = get_user(db, user.id)
+    print(user.posts)
+    return user
 
 
 @router.put('/me', status_code=204)
