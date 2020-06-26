@@ -77,6 +77,24 @@ class Post(Base):
     )
 
 
+class PostedImage(Base):
+    __tablename__ = 'posted_images'
+    id = Column(UUIDType(binary=False), primary_key=True,
+                default=uuid.uuid4, index=True)
+    url = Column(String(length=256))
+    post_id = Column(UUIDType(binary=False), ForeignKey("posts.id"))
+    post = relationship("Post", back_populates="posted_images")
+
+
+class GeneratedImage(Base):
+    __tablename__ = 'generated_images'
+    id = Column(UUIDType(binary=False), primary_key=True,
+                default=uuid.uuid4, index=True)
+    url = Column(String(length=256))
+    post_id = Column(UUIDType(binary=False), ForeignKey("posts.id"))
+    post = relationship("Post", back_populates="generated_images")
+
+
 class Token(Base):
     __tablename__ = 'tokens'
     social_id = Column(Integer, primary_key=True, index=True, unique=True)

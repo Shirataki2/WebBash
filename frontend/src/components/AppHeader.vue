@@ -200,19 +200,17 @@ class AppHeader extends Vue {
         params.append("access_token", accessToken);
         params.append("refresh_token", refreshToken);
         try {
+          await this.$axios.post("/api/token/refresh", params, {
+            headers: {
+              "content-type": "multipart/form-data"
+            }
+          });
           const accessToken = Cookies.get("access_token");
-          const [{ data }, ignore] = await Promise.all([
-            this.$axios.get("/api/users/me", {
-              headers: {
-                "access-token": accessToken
-              }
-            }),
-            this.$axios.post("/api/token/refresh", params, {
-              headers: {
-                "content-type": "multipart/form-data"
-              }
-            })
-          ]);
+          const { data } = await this.$axios.get("/api/users/me", {
+            headers: {
+              "access-token": accessToken
+            }
+          });
 
           console.log("Update Access Token");
           console.log(Date.now());

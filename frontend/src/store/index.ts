@@ -9,6 +9,9 @@ export default new Vuex.Store<{
   history: string[];
   username: string;
   avatarUrl: string;
+  snackbar: boolean;
+  snackbarType: string;
+  message: string;
 }>
   ({
     state: {
@@ -16,7 +19,10 @@ export default new Vuex.Store<{
       code: "",
       history: [],
       username: "",
-      avatarUrl: ""
+      avatarUrl: "",
+      snackbar: false,
+      snackbarType: "error",
+      message: ""
     },
     mutations: {
       SET_LOGIN(state, isLogin: boolean) {
@@ -43,6 +49,14 @@ export default new Vuex.Store<{
       DELETE_ALL_HISTORY(state) {
         state.history = []
       },
+      SET_SNACKBAR(state, snackbar: boolean) {
+        state.snackbar = snackbar
+      },
+      SET_MESSAGE(state, payload: { snackbarType: string; message: string }) {
+        state.snackbar = true;
+        state.snackbarType = payload.snackbarType;
+        state.message = payload.message
+      }
     },
     actions: {
       setLogin({ commit }, isLogin: boolean) {
@@ -68,6 +82,9 @@ export default new Vuex.Store<{
       },
       deleteAllHistory({ commit }) {
         commit("DELETE_ALL_HISTORY");
+      },
+      setMessage({ commit }, payload: { snackbarType: string; message: string }) {
+        commit("SET_MESSAGE", payload)
       }
     },
     modules: {

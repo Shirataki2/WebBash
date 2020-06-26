@@ -11,7 +11,8 @@ class PostBase(BaseModel):
 
 
 class PostCreate(PostBase):
-    pass
+    posted_images: List[str]
+    generated_images: List[str]
 
 
 class Post(PostBase):

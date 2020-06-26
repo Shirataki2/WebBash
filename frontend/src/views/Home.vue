@@ -72,6 +72,7 @@
                   </v-card-text>
                   <v-card-subtitle style="font-family: monospace">[EXITCODE]</v-card-subtitle>
                   <v-card-text style="font-family: monospace">{{ exitCode }}</v-card-text>
+                  <SaveForm :visible="exitCode !== '' && $store.state.isLogin" />
                 </v-card>
               </v-col>
             </v-row>
@@ -79,18 +80,21 @@
         </v-row>
       </v-container>
       <v-snackbar
-        v-model="snackbar"
-        :color="snackbarType"
+        v-model="$store.state.snackbar"
+        :color="$store.state.snackbarType"
         top
       >
-        <strong>{{ message }}</strong>
-        <v-btn
-          dark
-          text
-          @click="snackbar = false"
-        >
-          Close
-        </v-btn>
+        <strong>{{ $store.state.message }}</strong>
+        <template v-slot:action="{ attrs }">
+          <v-btn
+            dark
+            text
+            v-bind="attrs"
+            @click="$store.commit('SET_SNACKBAR', false)"
+          >
+            Close
+          </v-btn>
+        </template>
       </v-snackbar>
     </v-main>
   </div>
@@ -99,6 +103,7 @@
 <script lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Editor from "@/components/Editor.vue";
+import SaveForm from "@/components/SaveForm.vue";
 import ImageViewer from "@/components/ImageViewer.vue";
 import { Vue, Component } from "vue-property-decorator";
 
@@ -106,7 +111,8 @@ import { Vue, Component } from "vue-property-decorator";
   name: "home",
   components: {
     Editor,
-    ImageViewer
+    ImageViewer,
+    SaveForm
   }
 })
 class Home extends Vue {
@@ -121,10 +127,6 @@ class Home extends Vue {
 
   isload = false;
   fileValid = false;
-
-  snackbar = false;
-  snackbarType = "error";
-  message = "";
 
   get disabled() {
     return this.$store.state.code === "";
@@ -227,16 +229,12 @@ class Home extends Vue {
   }
 
   onError(message: string) {
-    this.snackbar = true;
-    this.snackbarType = "error";
-    this.message = message;
+    this.$store.dispatch("setMessage", { message, snackbarType: "error" });
     this.isload = false;
   }
 
   onSuccess(message: string) {
-    this.snackbar = true;
-    this.snackbarType = "success";
-    this.message = message;
+    this.$store.dispatch("setMessage", { message, snackbarType: "success" });
     this.isload = false;
   }
 
