@@ -65,6 +65,8 @@ class Post(Base):
     owner_id = Column(UUIDType(binary=False), ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="posts")
+    posted_images = relationship("PostedImage", back_populates="post")
+    generated_images = relationship("GeneratedImage", back_populates="post")
     upvotes = relationship(
         "User",
         secondary=user_upvotes,

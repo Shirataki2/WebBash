@@ -335,7 +335,7 @@ async def write_source(run_id, code, filename, media=None):
         for i, image in enumerate(media):
             async with aiofiles.open(f"/tmp/app/{run_id}/media/{i}", 'wb') as f:
                 await f.write(await image.read())
-            ext = os.path.splitext(image)[1]
+            ext = os.path.splitext(image.filename)[1]
             fp = f'/images/{run_id}_r{i}{ext}'
             shutil.copy(f"/tmp/app/{run_id}/media/{i}", fp)
             fps.append(
