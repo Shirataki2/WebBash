@@ -71,7 +71,7 @@ class Post(Base):
     main = Column(String(length=4000))
     stdout = Column(String(length=3000))
     stderr = Column(String(length=3000))
-    exitcode = Column(String(length=5))
+    exitcode = Column(String(length=64))
     post_at = Column(DateTime, default=datetime.now())
     owner_id = Column(UUIDType(binary=False), ForeignKey("users.id"))
 
