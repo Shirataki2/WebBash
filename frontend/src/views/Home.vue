@@ -50,6 +50,11 @@
                   ]"
                   />
                 </v-form>
+                <ImageViewer
+                  v-if="previewImages !== []"
+                  :images="previewImages"
+                  disable-download
+                />
               </v-col>
             </v-row>
           </v-col>
@@ -124,6 +129,8 @@ class Home extends Vue {
   // history: string[] = [];
   images: string[] = [];
   media: File[] = [];
+  previewImages: string[] = [];
+  mediaPath: string[] = [];
 
   isload = false;
   fileValid = false;
@@ -139,7 +146,11 @@ class Home extends Vue {
   }
 
   onFileSelected(e: Array<File>) {
+    this.previewImages = [];
     this.media = e;
+    e.forEach(img => {
+      this.previewImages.push(URL.createObjectURL(img));
+    });
   }
 
   mounted() {
@@ -211,6 +222,7 @@ class Home extends Vue {
         data.exit_code === 124 ? " (timeout)" : ""
       })`;
       this.images = data.images;
+      this.mediaPath = data.media;
     } catch (e) {
       const status: number = e.response.status;
       if (status === 503) {

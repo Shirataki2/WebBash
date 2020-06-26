@@ -48,6 +48,7 @@
             <v-btn
               block
               :href="image"
+              v-if="!disableDownload"
               target="_blank"
               large
             >
@@ -68,6 +69,8 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 class ImageViewer extends Vue {
   src = "";
   dialog = false;
+  @Prop({ type: Boolean, default: false })
+  disableDownload!: boolean;
 
   @Prop({ type: Array, default: [] })
   images!: string[];
