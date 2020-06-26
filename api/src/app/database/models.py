@@ -16,29 +16,6 @@ follow_table = Table('follows', Base.metadata,
                      )
 
 
-class User(Base):
-    __tablename__ = 'users'
-    id = Column(UUIDType(binary=False), primary_key=True,
-                default=uuid.uuid4, index=True, unique=True)
-    username = Column(String(length=32), index=True)
-    avater_url = Column(String(length=256))
-    banned = Column(Boolean, default=False)
-
-    posts = relationship("Post", back_populates="owner")
-    token = relationship("Token", back_populates="owner")
-    upvoted_posts = relationship(
-        "Post", back_populates="upvotes")
-    downvoted_posts = relationship(
-        "Post", back_populates="downvotes")
-    followee = relationship(
-        "User",
-        lambda: follow_table,
-        primaryjoin=lambda: User.id == follow_table.c.follower_id,
-        secondaryjoin=lambda: User.id == follow_table.c.followee_id,
-        backref="follower"
-    )
-
-
 user_upvotes = Table('user_upvotes', Base.metadata,
                      Column('user_id', UUIDType(binary=False),
                             ForeignKey('users.id')),
@@ -54,6 +31,37 @@ user_downvotes = Table('user_downvotes', Base.metadata,
                        )
 
 
+class User(Base):
+    __tablename__ = 'users'
+    id = Column(UUIDType(binary=False), primary_key=True,
+                default=uuid.uuid4, index=True, unique=True)
+    username = Column(String(length=32), index=True)
+    avater_url = Column(String(length=256))
+    banned = Column(Boolean, default=False)
+
+    posts = relationship("Post", back_populates="owner")
+    token = relationship("Token", back_populates="owner")
+    upvoted_posts = relationship(
+        "Post",
+        lambda: user_upvotes,
+        primaryjoin=lambda: User.id == user_upvotes.c.post_id,
+        secondaryjoin=lambda: User.id == user_upvotes.c.user_id,
+        back_populates="upvotes")
+    downvoted_posts = relationship(
+        "Post",
+        lambda: user_downvotes,
+        primaryjoin=lambda: User.id == user_downvotes.c.post_id,
+        secondaryjoin=lambda: User.id == user_downvotes.c.user_id,
+        back_populates="downvotes")
+    followee = relationship(
+        "User",
+        lambda: follow_table,
+        primaryjoin=lambda: User.id == follow_table.c.follower_id,
+        secondaryjoin=lambda: User.id == follow_table.c.followee_id,
+        backref="follower"
+    )
+
+
 class Post(Base):
     __tablename__ = 'posts'
     id = Column(UUIDType(binary=False), primary_key=True,
@@ -61,6 +69,9 @@ class Post(Base):
     title = Column(String(length=32))
     description = Column(String(length=280))
     main = Column(String(length=4000))
+    stdout = Column(String(length=3000))
+    stderr = Column(String(length=3000))
+    exitcode = Column(String(length=5))
     post_at = Column(DateTime, default=datetime.now())
     owner_id = Column(UUIDType(binary=False), ForeignKey("users.id"))
 

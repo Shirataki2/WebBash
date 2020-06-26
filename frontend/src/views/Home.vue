@@ -81,6 +81,9 @@
                     :visible="exitCode !== '' && $store.state.isLogin"
                     :images="images"
                     :media="mediaPath"
+                    :stdout="stdout"
+                    :stderr="stderr"
+                    :exitcode="exitCode"
                   />
                 </v-card>
               </v-col>
