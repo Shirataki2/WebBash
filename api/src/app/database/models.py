@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Table, ForeignKey, Integer, String, DateTime
+from sqlalchemy import Boolean, Column, Table, ForeignKey, Integer, BigInteger, String, DateTime
 from sqlalchemy.orm import relationship
 
 from sqlalchemy_utils import UUIDType
@@ -110,7 +110,7 @@ class GeneratedImage(Base):
 
 class Token(Base):
     __tablename__ = 'tokens'
-    social_id = Column(Integer, primary_key=True, index=True, unique=True)
+    social_id = Column(BigInteger, primary_key=True, index=True, unique=True)
     refresh_token = Column(String)
     access_token_expire_at = Column(DateTime)
     refresh_token_expire_at = Column(DateTime)
