@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import axios from 'axios'
 
 const checkToken = async (vue: Vue): Promise<Record<string, string> | null> => {
     const accessToken = Cookies.get("access_token");
@@ -9,7 +10,7 @@ const checkToken = async (vue: Vue): Promise<Record<string, string> | null> => {
         console.log("Valid Access Token");
         // 基本情報の取得
         try {
-            const { data } = await vue.$axios.get("/api/users/me", {
+            const { data } = await axios.get("/api/users/me", {
                 headers: {
                     "access-token": accessToken
                 }
@@ -22,13 +23,13 @@ const checkToken = async (vue: Vue): Promise<Record<string, string> | null> => {
             params.append("access_token", accessToken);
             params.append("refresh_token", refreshToken);
             try {
-                await vue.$axios.post("/api/token/refresh", params, {
+                await axios.post("/api/token/refresh", params, {
                     headers: {
                         "content-type": "multipart/form-data"
                     }
                 });
                 const accessToken = Cookies.get("access_token");
-                const { data } = await vue.$axios.get("/api/users/me", {
+                const { data } = await axios.get("/api/users/me", {
                     headers: {
                         "access-token": accessToken
                     }
@@ -36,7 +37,7 @@ const checkToken = async (vue: Vue): Promise<Record<string, string> | null> => {
 
                 console.log("Update Access Token");
                 return data;
-            } catch (e) {
+            } catch {
                 console.log("Invalid Access Token");
                 return null;
             }

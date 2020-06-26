@@ -54,16 +54,16 @@
         </v-card-text>
         <v-card-actions>
           <v-btn
-            color="primary"
-            text
-            @click="onCodeSubmit"
-          >Save</v-btn>
-          <v-spacer></v-spacer>
-          <v-btn
             color="error"
             text
             @click="onCodeCencel"
           >Cancel</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="primary"
+            text
+            @click="onCodeSubmit"
+          >Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
