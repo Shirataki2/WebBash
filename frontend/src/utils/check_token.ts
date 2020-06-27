@@ -1,13 +1,13 @@
 import Cookies from "js-cookie";
 import axios from 'axios'
 
+// eslint-disable-next-line
 const checkToken = async (vue: Vue): Promise<Record<string, string> | null> => {
     const accessToken = Cookies.get("access_token");
     const refreshToken = Cookies.get("refresh_token");
     const accessTokenExpire = Cookies.get("access_token_expire");
     // ログイン情報を問い合わせる
     if (accessToken && refreshToken && accessTokenExpire) {
-        console.log("Valid Access Token");
         // 基本情報の取得
         try {
             const { data } = await axios.get("/api/users/me", {
@@ -17,7 +17,6 @@ const checkToken = async (vue: Vue): Promise<Record<string, string> | null> => {
             });
             return data;
         } catch {
-            console.log("Expired Access Token");
             // Refresh Tokenでトークンの更新を図る
             const params = new FormData();
             params.append("access_token", accessToken);
@@ -34,11 +33,8 @@ const checkToken = async (vue: Vue): Promise<Record<string, string> | null> => {
                         "access-token": accessToken
                     }
                 });
-
-                console.log("Update Access Token");
                 return data;
             } catch {
-                console.log("Invalid Access Token");
                 return null;
             }
         }
