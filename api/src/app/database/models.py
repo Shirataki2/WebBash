@@ -72,7 +72,7 @@ class Post(Base):
     stdout = Column(String(length=3000))
     stderr = Column(String(length=3000))
     exitcode = Column(String(length=64))
-    post_at = Column(DateTime, default=datetime.now())
+    post_at = Column(DateTime, default=datetime.now)
     owner_id = Column(UUIDType(binary=False), ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="posts")

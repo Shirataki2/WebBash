@@ -4,7 +4,10 @@
     color="primary"
     dark
   >
-    <v-toolbar-title @click="$router.push('/').catch(() => {})">
+    <v-toolbar-title
+      @click="$router.push('/')"
+      style="cursor: pointer"
+    >
       <strong>Web Bash</strong>
     </v-toolbar-title>
     <v-spacer />
@@ -14,7 +17,7 @@
       class="mr-n1 ml-n1"
       style="font-weight: 900"
       v-if="$store.state.isLogin"
-      @click="$router.push('/timeline')"
+      @click="$router.push('/timeline').catch(()=>{});"
     >
       <v-icon>
         mdi-forum

@@ -17,7 +17,7 @@
         >
           <v-dialog
             v-model="dialog"
-            max-width="1000"
+            max-width="1800"
           >
             <template v-slot:activator="{ on }">
               <v-img

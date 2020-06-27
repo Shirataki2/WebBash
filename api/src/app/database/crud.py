@@ -72,7 +72,15 @@ def create_user(db: Session, user: schemas.UserCreate) -> schemas.User:  # pragm
 
 
 def get_all_posts(db: Session, skip: int = 0, limit: int = 10) -> List[schemas.Post]:
-    return db.query(models.Post).order_by(desc(models.Post.post_at)).offset(skip).limit(limit).all()
+    return db.query(models.Post).join(models.User).order_by(desc(models.Post.post_at)).offset(skip).limit(limit).all()
+
+
+def fetch_new_posts(db: Session, post_at: str, skip: int = 0, limit: int = 1000) -> List[schemas.Post]:
+    return db.query(models.Post).join(models.User).filter(models.Post.post_at > datetime.strptime(post_at, "%Y-%m-%dT%H:%M:%S.%f")).order_by(desc(models.Post.post_at)).offset(skip).limit(limit).all()
+
+
+def fetch_old_posts(db: Session, post_at: str, skip: int = 0, limit: int = 10) -> List[schemas.Post]:
+    return db.query(models.Post).filter(models.Post.post_at < datetime.strptime(post_at, "%Y-%m-%dT%H:%M:%S.%f")).join(models.User).order_by(desc(models.Post.post_at)).offset(skip).limit(limit).all()
 
 
 def get_user_posts(db: Session, user_id: uuid.UUID, skip: int = 0, limit: int = 10) -> List[schemas.Post]:
