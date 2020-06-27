@@ -43,7 +43,7 @@ class UserNotFoundException(HTTPException):  # pragma: no cover
         super().__init__(status_code, detail, headers)
 
 
-class PostNotFoundException(HTTPException):
+class PostNotFoundException(HTTPException):  # pragma: no cover
     def __init__(self, headers: dict = None):
         status_code = 404
         detail = 'Post not Found.'

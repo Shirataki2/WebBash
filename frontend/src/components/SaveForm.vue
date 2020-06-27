@@ -100,6 +100,7 @@ class SaveForm extends Vue {
 
   async onCodeSubmit() {
     try {
+      // eslint-disable-next-line
       const data = await checkToken(this);
       const accessToken = Cookies.get("access_token");
       await this.$axios.post(
