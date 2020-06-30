@@ -1,8 +1,8 @@
 /**/node_modules
 *.pyc
-/**/*.png
-/**/*.jpeg
-/**/*.jpg
+/**/images/*.png
+/**/images/*.jpeg
+/**/images/*.jpg
 *.gif
 /elastic/esdata*
 .env.*.secret
