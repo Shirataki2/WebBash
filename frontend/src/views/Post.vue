@@ -6,9 +6,10 @@
           <SideBar />
           <v-col
             cols="10"
-            sm="11"
+            sm="10"
             md="8"
-            lg="9"
+            lg="8"
+            xl="9"
             style="height: 100%; border-left: 1px solid #777; border-right: 1px solid #777"
           >
             <span
@@ -113,7 +114,7 @@
                   class="mt-2"
                   style="font-family: monospace;white-space: pre-line; word-wrap:break-word;font-size:1em"
                 >
-                  {{ post.stferr }}
+                  {{ post.stderr }}
                 </p>
                 <v-divider />
                 <p
