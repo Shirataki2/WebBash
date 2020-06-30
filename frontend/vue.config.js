@@ -4,16 +4,13 @@ module.exports = {
     proxy: "http://proxy",
   },
   pwa: {
-    name: 'My App',
-    themeColor: '#4DBA87',
+    name: 'Web Bash',
+    themeColor: '#1D6AF2',
     msTileColor: '#000000',
     appleMobileWebAppCapable: 'yes',
     appleMobileWebAppStatusBarStyle: 'black',
-
-    // configure the workbox plugin
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {
-      // swSrc is required in InjectManifest mode.
       swSrc: 'dev/sw.js',
       // ...other Workbox options...
     }
