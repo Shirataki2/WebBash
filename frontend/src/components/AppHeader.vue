@@ -105,8 +105,8 @@
     </v-menu>
     <v-dialog
       v-model="historyDialog"
-      scrollable
       max-width="700px"
+      scrollable
     >
       <template v-slot:activator="{ on }">
         <v-btn
