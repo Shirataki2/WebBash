@@ -2,6 +2,7 @@
   <div>
     <v-btn
       icon
+      large
       v-if="$vuetify.theme.dark"
       @click="$vuetify.theme.dark=false"
     >
@@ -9,6 +10,7 @@
     </v-btn>
     <v-btn
       icon
+      large
       v-if="!$vuetify.theme.dark"
       @click="$vuetify.theme.dark=true"
     >

@@ -6,6 +6,7 @@ import './plugins/codemirror';
 import './plugins/visibility';
 import router from './router'
 import store from './store'
+//import './registerServiceWorker'
 
 Vue.config.productionTip = false
 

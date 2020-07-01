@@ -1,11 +1,11 @@
 <template>
   <div>
-    <v-main class="mt-n3 pb-7">
+    <v-main class="mt-n7 pb-7">
       <v-container>
         <v-row>
           <SideBar />
           <v-col
-            cols="10"
+            cols="12"
             sm="10"
             md="8"
             lg="8"
