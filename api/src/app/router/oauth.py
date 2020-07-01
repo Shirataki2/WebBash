@@ -25,7 +25,7 @@ async def login(request: Request):  # pragma: no cover
     if os.environ['NODE_ENV'] == 'development':
         redirect_uri = 'http://192.168.10.19:5919/api/oauth/auth'
     else:
-        redirect_uri = request.url_for('auth')
+        redirect_uri = 'https://bash.chomama.jp/api/oauth/auth'
     return await oauth.twitter.authorize_redirect(request, redirect_uri)
 
 
