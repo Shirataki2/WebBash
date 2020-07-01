@@ -1,7 +1,7 @@
 <template>
   <v-app dark>
     <AppHeader />
-    <router-view />
+    <router-view class="mb-4"/>
     <AppFooter />
   </v-app>
 </template>
