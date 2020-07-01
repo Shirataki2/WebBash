@@ -6,7 +6,7 @@
       padless
       cols="12"
     >
-      Version 2.1.6 |
+      Version 2.1.7 |
       &copy; {{ new Date().getFullYear() }} — <strong>FF </strong><a
         target="_blank"
         href="https://twitter.com/fujifog"

@@ -2,8 +2,8 @@
   <v-container fluid>
     <v-row>
       <v-col
-        v-for="(image, i) in images"
-        :key="i"
+        v-for="image in images"
+        :key="image"
         class="d-flex child-flex"
         cols="6"
         sm="3"
@@ -47,7 +47,7 @@
             </v-img>
             <v-btn
               block
-              :href="image"
+              :href="src"
               v-if="!disableDownload"
               target="_blank"
               large
