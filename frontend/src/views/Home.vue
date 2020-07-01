@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mb-8">
     <v-main>
       <v-container grid-list-sm>
         <v-row>

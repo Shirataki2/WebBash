@@ -1,6 +1,7 @@
 <template>
   <v-col
     style="height: 100%"
+    class="hidden-xs-only"
     cols="1"
     sm="1"
     md="4"

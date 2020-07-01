@@ -6,11 +6,13 @@
       padless
       cols="12"
     >
-      Version 2.1.5 |
-      &copy; {{ new Date().getFullYear() }} — <strong>FF</strong> (Twitter: <a
+      Version 2.1.6 |
+      &copy; {{ new Date().getFullYear() }} — <strong>FF </strong><a
         target="_blank"
         href="https://twitter.com/fujifog"
-      >@fujifog</a>) | <a
+      >@fujifog</a>
+      <br/>
+      <a
         target="_blank"
         href="/api/docs"
       >API Documentation</a>

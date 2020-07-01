@@ -1,9 +1,11 @@
 <template>
+  <div>
   <v-app-bar
     app
     color="primary"
     dark
   >
+    <v-app-bar-nav-icon @click.stop="drawer = !drawer" class="hidden-sm-and-up mr-n3"></v-app-bar-nav-icon>
     <v-toolbar-title
       @click="$router.push('/')"
       style="cursor: pointer"
@@ -12,9 +14,9 @@
     </v-toolbar-title>
     <v-spacer />
     <v-btn
+      class="hidden-xs-only mr-n1 ml-n1"
       text
       large
-      class="mr-n1 ml-n1"
       style="font-weight: 900"
       v-if="$store.state.isLogin"
       @click="$router.push('/timeline').catch(()=>{});"
@@ -47,6 +49,8 @@
         <div v-else>
           <v-btn
             icon
+            large
+            class="hidden-xs-only"
             v-bind="attrs"
             v-on="on"
           >
@@ -77,6 +81,7 @@
       <template v-slot:activator="{ on }">
         <v-btn
           icon
+          large
           v-on="on"
         >
           <v-icon>
@@ -123,7 +128,9 @@
       </v-card>
     </v-dialog>
     <v-btn
+      v-if="$route.path==='/'"
       icon
+      large
       target="_blank"
       :href="`https://twitter.com/intent/tweet?text=${encodeURIComponent(code)}&hashtags=${encodeURIComponent('シェル芸')}`"
     >
@@ -137,6 +144,8 @@
       <template v-slot:activator="{ on }">
         <v-btn
           icon
+          large
+          class="hidden-xs-only"
           v-on="on"
         >
           <v-icon>
@@ -161,8 +170,103 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <ThemeSwitch />
+    <ThemeSwitch class="hidden-xs-only"/>
   </v-app-bar>
+  <v-navigation-drawer
+      v-model="drawer"
+      absolute
+      app
+      temporary
+  >
+    <v-list
+      nav
+    >
+      <v-list-item-group style="background-color: transparent">
+      <div v-if="$store.state.isLogin">
+      <v-list-item
+         @click="() => {$router.push('/timeline').catch(() => { $vuetify.goTo(0, {duration: 1000, easing: 'easeInOutCubic'}) })}"
+      >
+        <v-list-item-icon>
+            <v-icon class="sidebar">mdi-home</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content class="hidden-sm-and-up">
+          <v-list-item-title class="sidebar">すべての投稿</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-icon>
+          <v-badge content="開発中">
+            <v-icon class="sidebar">mdi-bell</v-icon>
+          </v-badge>
+        </v-list-item-icon>
+        <v-list-item-content class="hidden-sm-and-up">
+          <v-list-item-title class="sidebar">通知</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-icon>
+          <v-badge content="開発中">
+            <v-icon class="sidebar">mdi-account-heart</v-icon>
+          </v-badge>
+        </v-list-item-icon>
+        <v-list-item-content class="hidden-sm-and-up">
+          <v-list-item-title class="sidebar">フォロー中の投稿</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-icon>
+          <v-badge content="開発中">
+            <v-icon class="sidebar">mdi-account</v-icon>
+          </v-badge>
+        </v-list-item-icon>
+        <v-list-item-content class="hidden-sm-and-up">
+          <v-list-item-title class="sidebar">ユーザー</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item @click="logout">
+        <v-list-item-icon>
+          <v-icon class="sidebar">mdi-logout-variant</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content class="hidden-sm-and-up">
+          <v-list-item-title class="sidebar">Logout</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      </div>
+      <div v-else>
+        <v-list-item @click="logInWithTwitter">
+        <v-list-item-icon>
+            <v-icon class="sidebar">mdi-login-variant</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content class="hidden-sm-and-up">
+          <v-list-item-title class="sidebar">Login with Twitter</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      </div>
+      <v-list-item @click="() => { helpDialog = true; drawer = false }">
+      <v-list-item-icon>
+        <v-icon class="sidebar">mdi-help-circle</v-icon>
+      </v-list-item-icon>
+      <v-list-item-content class="hidden-sm-and-up">
+          <v-list-item-title class="sidebar">Help</v-list-item-title>
+      </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="mt-5" @click="() => {$router.push('/').catch(() => {})}">
+        <v-list-item-icon>
+          <v-icon class="sidebar">mdi-console-line</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content class="hidden-sm-and-up">
+          <v-list-item-title class="sidebar">シェル芸を作成!</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      </v-list-item-group>
+    </v-list>
+    <template v-slot:append>
+      <div class="pa-2">
+        <ThemeSwitch/>
+      </div>
+    </template>
+  </v-navigation-drawer>
+  </div>
 </template>
 
 <script lang="ts">
@@ -170,6 +274,7 @@ import { Vue, Component } from "vue-property-decorator";
 import checkToken from "@/utils/check_token";
 import About from "@/components/About.vue";
 import ThemeSwitch from "@/components/ThemeSwitch.vue";
+import Cookies from "js-cookie";
 
 @Component({
   components: {
@@ -178,6 +283,7 @@ import ThemeSwitch from "@/components/ThemeSwitch.vue";
   }
 })
 class AppHeader extends Vue {
+  drawer = false;
   historyDialog = false;
   helpDialog = false;
 
@@ -200,6 +306,9 @@ class AppHeader extends Vue {
 
   async logout() {
     console.log("Logout");
+    Cookies.remove("access_token");
+    Cookies.remove("refresh_token");
+    Cookies.remove("access_token_expire");
     this.$axios.get("/api/oauth/logout");
     this.$store.dispatch("setLogin", false);
     this.$store.dispatch("setUsername", "");
@@ -240,3 +349,10 @@ class AppHeader extends Vue {
 }
 export default AppHeader;
 </script>
+
+<style scoped>
+.sidebar {
+  font-weight: 900;
+  font-size: 1.1em !important;
+}
+</style>
