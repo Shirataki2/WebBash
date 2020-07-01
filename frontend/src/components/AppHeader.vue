@@ -16,7 +16,6 @@
     <v-btn
       class="hidden-xs-only mr-n1 ml-n1"
       text
-      large
       style="font-weight: 900"
       v-if="$store.state.isLogin"
       @click="$router.push('/timeline').catch(()=>{});"
@@ -28,6 +27,37 @@
         TimeLine
       </span>
     </v-btn>
+    <v-dialog
+      v-model="tosDialog"
+      scrollable
+      max-width="1000px"
+    >
+      <template v-slot:activator="{ on }">
+        <v-btn
+          text
+          class="hidden-xs-only"
+          v-on="on"
+        >
+          <strong>利用規約</strong>
+        </v-btn>
+      </template>
+      <v-card>
+        <v-card-title>利用規約</v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="pt-4">
+          <TOS />
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-btn
+            color="primary"
+            text
+            @click="tosDialog = false"
+          >Close</v-btn>
+          <v-spacer />
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-menu offset-y>
       <template
         v-slot:activator="{on, attrs}"
@@ -75,12 +105,13 @@
     </v-menu>
     <v-dialog
       v-model="historyDialog"
-      scrollable
       max-width="700px"
+      scrollable
     >
       <template v-slot:activator="{ on }">
         <v-btn
           icon
+          v-if="$route.path==='/'"
           large
           v-on="on"
         >
@@ -250,6 +281,14 @@
           <v-list-item-title class="sidebar">Help</v-list-item-title>
       </v-list-item-content>
       </v-list-item>
+      <v-list-item @click="() => { tosDialog = true; drawer = false }">
+      <v-list-item-icon>
+        <v-icon class="sidebar">mdi-file-document-outline</v-icon>
+      </v-list-item-icon>
+      <v-list-item-content class="hidden-sm-and-up">
+          <v-list-item-title class="sidebar">利用規約</v-list-item-title>
+      </v-list-item-content>
+      </v-list-item>
       <v-list-item class="mt-5" @click="() => {$router.push('/').catch(() => {})}">
         <v-list-item-icon>
           <v-icon class="sidebar">mdi-console-line</v-icon>
@@ -273,19 +312,22 @@
 import { Vue, Component } from "vue-property-decorator";
 import checkToken from "@/utils/check_token";
 import About from "@/components/About.vue";
+import TOS from "@/components/TOS.vue";
 import ThemeSwitch from "@/components/ThemeSwitch.vue";
 import Cookies from "js-cookie";
 
 @Component({
   components: {
     About,
-    ThemeSwitch
+    ThemeSwitch,
+    TOS
   }
 })
 class AppHeader extends Vue {
   drawer = false;
   historyDialog = false;
   helpDialog = false;
+  tosDialog = false;
 
   async mounted() {
     const data = await checkToken(this);

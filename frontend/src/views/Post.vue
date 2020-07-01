@@ -5,7 +5,7 @@
         <v-row>
           <SideBar />
           <v-col
-            cols="10"
+            cols="12"
             sm="10"
             md="8"
             lg="8"
