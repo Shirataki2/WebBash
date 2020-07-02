@@ -3,22 +3,13 @@
     <v-main>
       <v-container grid-list-sm>
         <v-row>
-          <v-col
-            cols="12"
-            md="6"
-          >
+          <v-col cols="12" md="6">
             <v-row>
-              <v-col
-                cols="12"
-                class="order-xs-1 order-md-1"
-              >
+              <v-col cols="12" class="order-xs-1 order-md-1">
                 <Editor />
                 <span class="overline">{{ getLenLimit }}</span>
               </v-col>
-              <v-col
-                cols="12"
-                class="order-xs-3 order-md-6"
-              >
+              <v-col cols="12" class="order-xs-3 order-md-6">
                 <v-btn
                   block
                   color="primary"
@@ -28,25 +19,21 @@
                   @click="submit"
                   @keydown.enter.ctrl.exact="submit"
                   @keydown.enter.meta.exact="submit"
-                >送信</v-btn>
-              </v-col>
-              <v-col
-                cols="12"
-                class="order-xs-2 order-md-2"
-              >
-                <v-form
-                  v-model="fileValid"
-                  ref="fileForm"
-                  lazy-validation
+                  >送信</v-btn
                 >
-
+              </v-col>
+              <v-col cols="12" class="order-xs-2 order-md-2">
+                <v-form v-model="fileValid" ref="fileForm" lazy-validation>
                   <v-file-input
                     multiple
                     accept="image/*"
                     label="Media Input (4ファイルまで/各2MBまで)"
                     @change="onFileSelected"
                     :rules="[
-                      files => !files || !files.some(file => file.size > 2097152) || 'Image size should be less than 2 MB!'
+                      files =>
+                        !files ||
+                        !files.some(file => file.size > 2097152) ||
+                        'Image size should be less than 2 MB!'
                     ]"
                   />
                 </v-form>
@@ -58,25 +45,33 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col
-            cols="12"
-            md="6"
-            class="order-xs-3 order-md-2"
-          >
+          <v-col cols="12" md="6" class="order-xs-3 order-md-2">
             <v-row>
               <v-col cols="12">
                 <v-card>
-                  <v-card-subtitle style="font-family: monospace">[STDOUT]</v-card-subtitle>
-                  <v-card-text style="font-family: monospace;white-space: pre-line; word-wrap:break-word;font-size:0.8em">
+                  <v-card-subtitle style="font-family: monospace"
+                    >[STDOUT]</v-card-subtitle
+                  >
+                  <v-card-text
+                    style="font-family: monospace;white-space: pre-line; word-wrap:break-word;font-size:0.8em"
+                  >
                     {{ stdout }}
                   </v-card-text>
                   <ImageViewer :images="images" />
-                  <v-card-subtitle style="font-family: monospace">[STDERR]</v-card-subtitle>
-                  <v-card-text style="font-family: monospace;white-space: pre-line; word-wrap:break-word;font-size:0.8em">
+                  <v-card-subtitle style="font-family: monospace"
+                    >[STDERR]</v-card-subtitle
+                  >
+                  <v-card-text
+                    style="font-family: monospace;white-space: pre-line; word-wrap:break-word;font-size:0.8em"
+                  >
                     {{ stderr }}
                   </v-card-text>
-                  <v-card-subtitle style="font-family: monospace">[EXITCODE]</v-card-subtitle>
-                  <v-card-text style="font-family: monospace">{{ exitCode }}</v-card-text>
+                  <v-card-subtitle style="font-family: monospace"
+                    >[EXITCODE]</v-card-subtitle
+                  >
+                  <v-card-text style="font-family: monospace">{{
+                    exitCode
+                  }}</v-card-text>
                   <SaveForm
                     :visible="exitCode !== '' && $store.state.isLogin"
                     :images="images"

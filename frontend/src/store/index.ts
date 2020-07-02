@@ -7,6 +7,7 @@ export default new Vuex.Store<{
   isLogin: boolean;
   code: string;
   history: string[];
+  userId: string;
   username: string;
   avatarUrl: string;
   snackbar: boolean;
@@ -18,6 +19,7 @@ export default new Vuex.Store<{
       isLogin: false,
       code: "",
       history: [],
+      userId: "",
       username: "",
       avatarUrl: "",
       snackbar: false,
@@ -33,6 +35,9 @@ export default new Vuex.Store<{
       },
       SET_HISTORY(state, newcodes: Array<string>) {
         state.history = newcodes
+      },
+      SET_USER_ID(state, userId: string) {
+        state.userId = userId
       },
       SET_USERNAME(state, username: string) {
         state.username = username
@@ -67,6 +72,9 @@ export default new Vuex.Store<{
       },
       setHistory({ commit }, newcodes: Array<string>) {
         commit("SET_HISTORY", newcodes)
+      },
+      setUserId({ commit }, userId: string) {
+        commit("SET_USER_ID", userId)
       },
       setUsername({ commit }, username: string) {
         commit("SET_USERNAME", username)

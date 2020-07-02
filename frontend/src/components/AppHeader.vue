@@ -342,6 +342,7 @@ class AppHeader extends Vue {
   login(data: any) {
     console.log("Login");
     this.$store.dispatch("setLogin", true);
+    this.$store.dispatch("setUserId", data.id);
     this.$store.dispatch("setUsername", data.username);
     this.$store.dispatch("setAvatarUrl", data.avater_url);
   }
@@ -353,6 +354,7 @@ class AppHeader extends Vue {
     Cookies.remove("access_token_expire");
     this.$axios.get("/api/oauth/logout");
     this.$store.dispatch("setLogin", false);
+    this.$store.dispatch("setUserId", "");
     this.$store.dispatch("setUsername", "");
     this.$store.dispatch("setAvatarUrl", "");
   }

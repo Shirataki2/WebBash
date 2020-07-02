@@ -1,26 +1,15 @@
 <template>
   <v-card-text v-if="visible">
-    <v-dialog
-      v-model="saveDialog"
-      persistent
-      max-width="600px"
-    >
+    <v-dialog v-model="saveDialog" persistent max-width="600px">
       <template v-slot:activator="{ on }">
-        <v-btn
-          color="success"
-          block
-          v-on="on"
-        >Post</v-btn>
+        <v-btn color="success" block v-on="on">Post</v-btn>
       </template>
       <v-card>
         <v-card-title>
           <span class="headline">New Post</span>
         </v-card-title>
         <v-card-text>
-          <v-form
-            v-model="valid"
-            ref="form"
-          >
+          <v-form v-model="valid" ref="form">
             <v-container>
               <v-row>
                 <v-col cols="12">
@@ -31,7 +20,9 @@
                     :counter="32"
                     :rules="[
                       v => !!v || 'User Name is required',
-                      v => v.length <= 32 || 'User Name must be less than 32 characters',
+                      v =>
+                        v.length <= 32 ||
+                        'User Name must be less than 32 characters'
                     ]"
                     required
                   ></v-text-field>
@@ -43,7 +34,9 @@
                     outlined
                     :counter="280"
                     :rules="[
-                      v => v.length <= 280 || 'Description must be less than 280 characters',
+                      v =>
+                        v.length <= 280 ||
+                        'Description must be less than 280 characters'
                     ]"
                     required
                   ></v-textarea>
@@ -53,17 +46,9 @@
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn
-            color="error"
-            text
-            @click="onCodeCencel"
-          >Cancel</v-btn>
+          <v-btn color="error" text @click="onCodeCencel">Cancel</v-btn>
           <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            text
-            @click="onCodeSubmit"
-          >Save</v-btn>
+          <v-btn color="primary" text @click="onCodeSubmit">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

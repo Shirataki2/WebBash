@@ -7,11 +7,13 @@ services:
     env_file: ./.env.dev
     environment:
       NODE_ENV: development
+    entrypoint: sh ./entrypoint.sh
     working_dir: /app
     volumes:
       - ./frontend:/app
     ports:
       - 4040:8080
+      - 4098:8098
       - 4444:8000
     tty: true
   api:

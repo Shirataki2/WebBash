@@ -12,11 +12,7 @@
             xl="9"
             style="height: 100%; border-left: 1px solid #777; border-right: 1px solid #777"
           >
-            <span
-              class="title"
-              style="cursor: pointer"
-              @click="$router.back()"
-            >
+            <span class="title" style="cursor: pointer" @click="$router.back()">
               <v-icon class="mr-5 mb-1">
                 mdi-arrow-left
               </v-icon>
@@ -33,18 +29,18 @@
                 <v-avatar size="42">
                   <img :src="post.owner.avater_url" />
                 </v-avatar>
-                <span class="title font-weight-bold ml-2">{{ post.owner.username }}
+                <span class="title font-weight-bold ml-2"
+                  >{{ post.owner.username }}
                   <span class="ml-2 mr-4 subtitle-1">&#x2027;</span>
-                  <span class="subtitle-1 font-weight-light grey--text">{{ parseDate(post.post_at) }}</span>
+                  <span class="subtitle-1 font-weight-light grey--text">{{
+                    parseDate(post.post_at)
+                  }}</span>
                 </span>
               </v-card-title>
               <v-card-text>
                 <p class="title font-weight-bold">{{ post.title }}</p>
                 <p class="ml-3 mr-3">{{ post.description }}</p>
-                <CodeViewer
-                  :code="post.main"
-                  class="mb-3"
-                />
+                <CodeViewer :code="post.main" class="mb-3" />
                 <v-row class="mb-2">
                   <v-col cols="6">
                     <v-btn
@@ -98,7 +94,9 @@
                 <p
                   class="subtitle-1 font-weight-bold"
                   style="text-align: center"
-                >[標準出力]</p>
+                >
+                  [標準出力]
+                </p>
                 <p
                   class="mt-2"
                   style="font-family: monospace;white-space: pre-line; word-wrap:break-word;font-size:1em"
@@ -109,7 +107,9 @@
                 <p
                   class="subtitle-1 font-weight-bold"
                   style="text-align: center"
-                >[標準エラー出力]</p>
+                >
+                  [標準エラー出力]
+                </p>
                 <p
                   class="mt-2"
                   style="font-family: monospace;white-space: pre-line; word-wrap:break-word;font-size:1em"
@@ -120,19 +120,23 @@
                 <p
                   class="subtitle-1 font-weight-bold"
                   style="text-align: center"
-                >[画像入力]</p>
+                >
+                  [画像入力]
+                </p>
                 <ImageViewer
                   class="mt-n3 mb-n3"
-                  :images="post.posted_images.map((image) => image.url)"
+                  :images="post.posted_images.map(image => image.url)"
                 />
                 <v-divider />
                 <p
                   class="subtitle-1 font-weight-bold"
                   style="text-align: center"
-                >[画像出力]</p>
+                >
+                  [画像出力]
+                </p>
                 <ImageViewer
                   class="mt-n3 mb-n3"
-                  :images="post.generated_images.map((image) => image.url)"
+                  :images="post.generated_images.map(image => image.url)"
                 />
               </v-card-text>
             </v-card>

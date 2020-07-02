@@ -27,30 +27,49 @@
                 <v-avatar size="42">
                   <img :src="post.owner.avater_url || ''" />
                 </v-avatar>
-                <span class="subtitle-1 font-weight-bold ml-2">{{ post.owner.username || '' }}
+                <span class="subtitle-1 font-weight-bold ml-2">
+                  {{ post.owner.username || "" }}
                   <span class="ml-2 mr-4 subtitle-2">&#x2027;</span>
-                  <span class="subtitle-2 font-weight-light grey--text">{{ post.post_at ? parseDate(post.post_at) : '' }}</span>
+                  <span class="subtitle-2 font-weight-light grey--text">
+                    {{ post.post_at ? parseDate(post.post_at) : "" }}
+                  </span>
+                </span>
+                <v-spacer />
+                <span>
+                  <v-btn v-if="post.owner.id === $store.state.userId" icon>
+                    <v-icon>mdi-trash-can</v-icon>
+                  </v-btn>
                 </span>
               </v-card-title>
               <v-card-text>
                 <div
-                  @click="$router.push(`/user/${post.owner.id || ''}/post/${post.id || ''}`).catch(()=>{});"
+                  @click="
+                    $router
+                      .push(
+                        `/user/${post.owner.id || ''}/post/${post.id || ''}`
+                      )
+                      .catch(() => {})
+                  "
                   style="cursor: pointer"
                 >
-                  <p class="subtitle-1 font-weight-bold mt-n2 mb-n1">{{ post.title || '' }}</p>
-                  <p class="mt-2 mb-1 ml-3 mr-3">{{ post.description || '' }}</p>
+                  <p class="subtitle-1 font-weight-bold mt-n2 mb-n1">
+                    {{ post.title || "" }}
+                  </p>
+                  <p class="mt-2 mb-1 ml-3 mr-3">
+                    {{ post.description || "" }}
+                  </p>
                   <v-divider />
                   <p
                     class="mt-2 mb-n3"
                     style="font-family: monospace;white-space: pre-line; word-wrap:break-word;font-size:1em"
                   >
-                    {{ post.stdout ? previewResult(post.stdout) : ''}}
+                    {{ post.stdout ? previewResult(post.stdout) : "" }}
                   </p>
                 </div>
                 <ImageViewer
                   class="mt-n3 mb-n3"
                   v-if="post.generated_images"
-                  :images="post.generated_images.map((image) => image.url)"
+                  :images="post.generated_images.map(image => image.url)"
                 />
               </v-card-text>
             </v-card>
