@@ -1,7 +1,10 @@
 <template>
   <codemirror
     :value="code"
-    :options="{...cmOptions, ...{theme: $vuetify.theme.dark ? 'material' : 'mdn-like'}}"
+    :options="{
+      ...cmOptions,
+      ...{ theme: $vuetify.theme.dark ? 'material' : 'mdn-like' }
+    }"
   />
 </template>
 

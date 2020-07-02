@@ -1,8 +1,15 @@
 <template>
   <codemirror
     :value="$store.state.code"
-    @input="(newCode) => { $store.dispatch('setCode', newCode) }"
-    :options="{...cmOptions, ...{theme: $vuetify.theme.dark ? 'material' : 'mdn-like'}}"
+    @input="
+      newCode => {
+        $store.dispatch('setCode', newCode);
+      }
+    "
+    :options="{
+      ...cmOptions,
+      ...{ theme: $vuetify.theme.dark ? 'material' : 'mdn-like' }
+    }"
   />
 </template>
 

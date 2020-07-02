@@ -2,7 +2,12 @@
   <div>
     <h2 class="mb-4">これはなに</h2>
     <p>Webブラウザ上でシェルスクリプトを実行できるサイトです．</p>
-    <p>#シェル芸 で使われているDockerリポジトリを使用しています．(<a href="https://hub.docker.com/r/theoldmoon0602/shellgeibot">theoldmoon0602/shellgeibot</a>)</p>
+    <p>
+      #シェル芸 で使われているDockerリポジトリを使用しています．(<a
+        href="https://hub.docker.com/r/theoldmoon0602/shellgeibot"
+        >theoldmoon0602/shellgeibot</a
+      >)
+    </p>
     <h2 class="mt-9 mb-4">実行時の制限</h2>
     <ol>
       <li>実行時間は20秒まで</li>
@@ -26,7 +31,9 @@
     <div class="mt-6 mb-5">
       <h3 class="mb-2">画像受信</h3>
       <ol>
-        <li><code>/images</code>配下にpng/jpeg/jpg/gif拡張子の画像を置きます</li>
+        <li>
+          <code>/images</code>配下にpng/jpeg/jpg/gif拡張子の画像を置きます
+        </li>
         <li>画像が最大4枚まで表示されます</li>
         <li>作成した画像はクリックで拡大できます</li>
         <li>作成した画像はサーバーに保存されます</li>
@@ -75,15 +82,26 @@
       <h3 class="mb-2">Twitterに共有</h3>
       <ol>
         <li>
-          <v-icon>mdi-twitter</v-icon>をクリックするとTwitterのツイート投稿画面に移動します．
+          <v-icon>mdi-twitter</v-icon
+          >をクリックするとTwitterのツイート投稿画面に移動します．
         </li>
-        <li>シェル芸Botにフォローバックされている場合そのままツイートすることでシェル芸Botが実行してくれます．</li>
+        <li>
+          シェル芸Botにフォローバックされている場合そのままツイートすることでシェル芸Botが実行してくれます．
+        </li>
       </ol>
     </div>
     <h2 class="mt-9 mb-4">リポジトリ</h2>
-    <p><a href="https://github.com/Shirataki2/WebBash">https://github.com/Shirataki2/WebBash</a></p>
+    <p>
+      <a href="https://github.com/Shirataki2/WebBash"
+        >https://github.com/Shirataki2/WebBash</a
+      >
+    </p>
     <p>ビルド方法などは後ほど追記します．</p>
-    <p>環境が整ってれば<code>docker-compose -f docker-compose.prod.yml up -d</code>で起動できま<s>す</s> るはずです</p>
+    <p>
+      環境が整ってれば<code
+        >docker-compose -f docker-compose.prod.yml up -d</code
+      >で起動できま<s>す</s> るはずです
+    </p>
     <h2 class="mt-9 mb-4">使用フレームワーク等</h2>
     <ul>
       <li>Docker</li>
@@ -96,18 +114,17 @@
     </ul>
     <h2 class="mt-9 mb-4">参考にさせていただいたもの</h2>
     <ul>
-      <li><a
-          target="_blank"
-          href="https://twitter.com/minyoruminyon"
-        >シェル芸Bot</a></li>
-      <li><a
-          target="_blank"
-          href="https://github.com/kekeho/SGWeb"
-        >SGWeb</a></li>
-      <li><a
-          target="_blank"
-          href="https://github.com/jiro4989/websh"
-        >websh</a></li>
+      <li>
+        <a target="_blank" href="https://twitter.com/minyoruminyon"
+          >シェル芸Bot</a
+        >
+      </li>
+      <li>
+        <a target="_blank" href="https://github.com/kekeho/SGWeb">SGWeb</a>
+      </li>
+      <li>
+        <a target="_blank" href="https://github.com/jiro4989/websh">websh</a>
+      </li>
     </ul>
   </div>
 </template>
