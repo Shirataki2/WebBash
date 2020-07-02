@@ -78,8 +78,6 @@ def my_post(
 
 @router.delete('/me/posts/{post_id}', status_code=204)
 def delete_my_post(
-    skip: int = Query(0),
-    limit: int = Query(10),
     post_id: uuid.UUID = Path(...),
     db: Session = Depends(get_db),
     user: schemas.User = Depends(current_user)
@@ -89,6 +87,7 @@ def delete_my_post(
             raise exceptions.ForbiddenAccessException()
         db.query(models.Post).filter(
             models.Post.id == post_id).delete()
+        db.commit()
     else:
         raise exceptions.PostNotFoundException()
 

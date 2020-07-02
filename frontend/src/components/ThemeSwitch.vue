@@ -4,7 +4,7 @@
       icon
       large
       v-if="$vuetify.theme.dark"
-      @click="$vuetify.theme.dark=false"
+      @click="$vuetify.theme.dark = false"
     >
       <v-icon>mdi-weather-night</v-icon>
     </v-btn>
@@ -12,7 +12,7 @@
       icon
       large
       v-if="!$vuetify.theme.dark"
-      @click="$vuetify.theme.dark=true"
+      @click="$vuetify.theme.dark = true"
     >
       <v-icon>mdi-weather-sunny</v-icon>
     </v-btn>

@@ -8,13 +8,17 @@
     lg="4"
     xl="3"
   >
-    <v-list
-      flat
-      nav
-      style="background-color: transparent;position: fixed"
-    >
+    <v-list flat nav style="background-color: transparent;position: fixed">
       <v-list-item-group style="background-color: transparent">
-        <v-list-item @click="() => {$router.push('/timeline').catch(() => { $vuetify.goTo(0, {duration: 1000, easing: 'easeInOutCubic'}) })}">
+        <v-list-item
+          @click="
+            () => {
+              $router.push('/timeline').catch(() => {
+                $vuetify.goTo(0, { duration: 1000, easing: 'easeInOutCubic' });
+              });
+            }
+          "
+        >
           <v-list-item-icon>
             <v-icon class="sidebar">mdi-home</v-icon>
           </v-list-item-icon>
@@ -39,7 +43,9 @@
             </v-badge>
           </v-list-item-icon>
           <v-list-item-content class="hidden-sm-and-down">
-            <v-list-item-title class="sidebar">フォロー中の投稿</v-list-item-title>
+            <v-list-item-title class="sidebar"
+              >フォロー中の投稿</v-list-item-title
+            >
           </v-list-item-content>
         </v-list-item>
         <v-list-item>
@@ -53,12 +59,20 @@
           </v-list-item-content>
         </v-list-item>
         <div class="mt-4 mb-3" />
-        <v-list-item @click="() => {$router.push('/').catch(() => {})}">
+        <v-list-item
+          @click="
+            () => {
+              $router.push('/').catch(() => {});
+            }
+          "
+        >
           <v-list-item-icon>
             <v-icon class="sidebar">mdi-console-line</v-icon>
           </v-list-item-icon>
           <v-list-item-content class="hidden-sm-and-down">
-            <v-list-item-title class="sidebar">シェル芸を作成!</v-list-item-title>
+            <v-list-item-title class="sidebar"
+              >シェル芸を作成!</v-list-item-title
+            >
           </v-list-item-content>
         </v-list-item>
       </v-list-item-group>

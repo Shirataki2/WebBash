@@ -10,20 +10,13 @@
         md="6"
         xl="3"
       >
-        <v-card
-          flat
-          tile
-          class="d-flex"
-        >
-          <v-dialog
-            v-model="dialog"
-            max-width="1800"
-          >
+        <v-card flat tile class="d-flex">
+          <v-dialog v-model="dialog" max-width="1800">
             <template v-slot:activator="{ on }">
               <v-img
                 :src="image"
                 v-on="on"
-                @click="() => src = image"
+                @click="() => (src = image)"
                 aspect-ratio="1.6"
                 class="grey lighten-2"
                 max-height="100%"
@@ -35,16 +28,12 @@
                     align="center"
                     justify="center"
                   >
-                    <v-progress-circular
-                      indeterminate
-                      color="grey lighten-5"
-                    />
+                    <v-progress-circular indeterminate color="grey lighten-5" />
                   </v-row>
                 </template>
               </v-img>
             </template>
-            <v-img :src="src">
-            </v-img>
+            <v-img :src="src"> </v-img>
             <v-btn
               block
               :href="src"

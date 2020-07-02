@@ -1,0 +1,2 @@
+vue-devtools
+bash
