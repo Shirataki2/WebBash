@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-main class="mt-n7 pb-7">
+    <v-main class="mt-n3 pb-7">
       <v-container>
         <v-row>
           <SideBar />
@@ -12,67 +12,70 @@
             xl="9"
             style="height: 100%; border-left: 1px solid #777; border-right: 1px solid #777"
           >
-            <v-card
-              style="background-color: transparent; margin; border-bottom: 1px solid #777;"
-              class="grid-list-xs"
-              elevation="0"
-              v-for="(post, index) in posts"
-              :key="post.id"
-            >
-              <div
-                v-if="index == posts.length - 3"
-                v-observe-visibility="visibilityChanged"
-              />
-              <v-card-title>
-                <v-avatar size="42">
-                  <img :src="post.owner.avater_url || ''" />
-                </v-avatar>
-                <span class="subtitle-1 font-weight-bold ml-2">
-                  {{ post.owner.username || "" }}
-                  <span class="ml-2 mr-4 subtitle-2">&#x2027;</span>
-                  <span class="subtitle-2 font-weight-light grey--text">
-                    {{ post.post_at ? parseDate(post.post_at) : "" }}
-                  </span>
-                </span>
-                <v-spacer />
-                <span>
-                  <v-btn v-if="post.owner.id === $store.state.userId" icon>
-                    <v-icon>mdi-trash-can</v-icon>
-                  </v-btn>
-                </span>
-              </v-card-title>
-              <v-card-text>
+            <transition-group name="slide" tag="p">
+              <v-card
+                style="background-color: transparent; margin; border-bottom: 1px solid #777;"
+                class="grid-list-xs"
+                elevation="0"
+                v-for="(post, index) in posts"
+                :key="post.id"
+              >
                 <div
-                  @click="
-                    $router
-                      .push(
-                        `/user/${post.owner.id || ''}/post/${post.id || ''}`
-                      )
-                      .catch(() => {})
-                  "
-                  style="cursor: pointer"
-                >
-                  <p class="subtitle-1 font-weight-bold mt-n2 mb-n1">
-                    {{ post.title || "" }}
-                  </p>
-                  <p class="mt-2 mb-1 ml-3 mr-3">
-                    {{ post.description || "" }}
-                  </p>
-                  <v-divider />
-                  <p
-                    class="mt-2 mb-n3"
-                    style="font-family: monospace;white-space: pre-line; word-wrap:break-word;font-size:1em"
-                  >
-                    {{ post.stdout ? previewResult(post.stdout) : "" }}
-                  </p>
-                </div>
-                <ImageViewer
-                  class="mt-n3 mb-n3"
-                  v-if="post.generated_images"
-                  :images="post.generated_images.map(image => image.url)"
+                  v-if="index == posts.length - 3"
+                  v-observe-visibility="visibilityChanged"
                 />
-              </v-card-text>
-            </v-card>
+                <v-card-title>
+                  <v-avatar size="42">
+                    <img :src="post.owner.avater_url || ''" />
+                  </v-avatar>
+                  <span class="subtitle-1 font-weight-bold ml-2">
+                    {{ post.owner.username || "" }}
+                    <span class="ml-2 mr-4 subtitle-2">&#x2027;</span>
+                    <span class="subtitle-2 font-weight-light grey--text">
+                      {{ post.post_at ? parseDate(post.post_at) : "" }}
+                    </span>
+                  </span>
+                  <v-spacer />
+                  <span v-if="post.owner.id === $store.state.userId">
+                    <v-btn small icon @click="deletePost(post)">
+                      <v-icon color="red darken-4">mdi-trash-can</v-icon>
+                    </v-btn>
+                  </span>
+                  <confirm :ref="post.id" />
+                </v-card-title>
+                <v-card-text>
+                  <div
+                    @click="
+                      $router
+                        .push(
+                          `/user/${post.owner.id || ''}/post/${post.id || ''}`
+                        )
+                        .catch(() => {})
+                    "
+                    style="cursor: pointer"
+                  >
+                    <p class="subtitle-1 font-weight-bold mt-n2 mb-n1">
+                      {{ post.title || "" }}
+                    </p>
+                    <p class="mt-2 mb-1 ml-3 mr-3">
+                      {{ post.description || "" }}
+                    </p>
+                    <v-divider />
+                    <p
+                      class="mt-2 mb-n3"
+                      style="font-family: monospace;white-space: pre-line; word-wrap:break-word;font-size:1em"
+                    >
+                      {{ post.stdout ? previewResult(post.stdout) : "" }}
+                    </p>
+                  </div>
+                  <ImageViewer
+                    class="mt-n3 mb-n3"
+                    v-if="post.generated_images"
+                    :images="post.generated_images.map(image => image.url)"
+                  />
+                </v-card-text>
+              </v-card>
+            </transition-group>
           </v-col>
         </v-row>
       </v-container>
@@ -84,6 +87,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Vue, Component } from "vue-property-decorator";
 import SideBar from "@/components/SideBar.vue";
+import Confirm from "@/components/Confirm.vue";
 import Cookie from "js-cookie";
 import checkToken from "@/utils/check_token";
 import parseDate from "@/utils/parseDate";
@@ -96,7 +100,8 @@ Component.registerHooks(["beforeRouteEnter", "beforeRouteLeave"]);
   name: "timeline",
   components: {
     ImageViewer,
-    SideBar
+    SideBar,
+    Confirm
   }
 })
 class TimeLine extends Vue {
@@ -189,6 +194,28 @@ class TimeLine extends Vue {
     }
   }
 
+  async deletePost(post: any) {
+    const confirm: any = this.$refs[`${post.id}`];
+    if (
+      await confirm[0].open("投稿の削除", "本当に削除しますか", {
+        color: "error"
+      })
+    ) {
+      await checkToken(this);
+      const accessToken = Cookie.get("access_token");
+      await this.$axios.delete(`/api/users/me/posts/${post.id}`, {
+        headers: {
+          "access-token": accessToken
+        }
+      });
+      this.posts = this.posts.filter(p => p.id !== post.id);
+      this.$store.dispatch("setMessage", {
+        snackbarType: "success",
+        message: "正常に削除しました"
+      });
+    }
+  }
+
   // eslint-disable-next-line
   async visibilityChanged(isVisible: boolean, _e: any) {
     if (isVisible) {
@@ -229,11 +256,20 @@ export default TimeLine;
 </script>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s;
+.slide-enter-active {
+  animation: slide-in 0.7s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
+.slide-leave-active {
+  animation: slide-in 0.7s reverse;
+}
+@keyframes slide-in {
+  0% {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 </style>

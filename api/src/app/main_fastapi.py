@@ -63,7 +63,7 @@ def custom_openapi(openapi_prefix: str):  # pragma: no cover
         return api.openapi_schema
     openapi_schema = get_openapi(
         title="Web Bash API",
-        version="v 2.1.7",
+        version="v 2.1.8",
         openapi_prefix=openapi_prefix,
         description="シェル芸 on API",
         routes=api.routes,
