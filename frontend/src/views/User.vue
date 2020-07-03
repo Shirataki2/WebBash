@@ -43,20 +43,17 @@
                 <v-tab href="#tab-1">
                   最近の投稿
                 </v-tab>
-
-                <v-tab href="#tab-2">
-                  自己紹介
-                </v-tab>
-
-                <v-tab href="#tab-3">
-                  高評価した投稿
-                </v-tab>
               </v-tabs>
 
               <v-tabs-items v-model="tab" style="background-color: transparent">
-                <v-tab-item v-for="i in 3" :key="i" :value="'tab-' + i">
-                  <v-card flat color="transparent">
-                    <v-card-text>あ</v-card-text>
+                <v-tab-item value="tab-1">
+                  <v-card
+                    flat
+                    color="transparent"
+                    v-for="post in posts"
+                    :key="post.id"
+                  >
+                    <Post :post="post" :onDelete="deletePost" />
                   </v-card>
                 </v-tab-item>
               </v-tabs-items>
@@ -75,18 +72,21 @@ import Cookies from "js-cookie";
 import SideBar from "@/components/SideBar.vue";
 import checkToken from "@/utils/check_token";
 import Copy from "@/components/Copy.vue";
+import Post from "@/components/Post.vue";
 
 @Component({
   name: "User",
   components: {
     SideBar,
-    Copy
+    Copy,
+    Post
   }
 })
 class User extends Vue {
   user = "me";
   found = true;
   userdata: any = null;
+  posts: any = null;
   tab = 0;
 
   async mounted() {
@@ -99,6 +99,27 @@ class User extends Vue {
       }
     });
     this.userdata = data;
+    const posts = await this.$axios.get(`/api/users/${this.user}/posts`, {
+      headers: {
+        "access-token": accessToken
+      }
+    });
+    this.posts = posts.data;
+  }
+
+  async deletePost(post: any) {
+    await checkToken(this);
+    const accessToken = Cookies.get("access_token");
+    await this.$axios.delete(`/api/users/me/posts/${post.id}`, {
+      headers: {
+        "access-token": accessToken
+      }
+    });
+    this.posts = this.posts.filter((p: any) => p.id !== post.id);
+    this.$store.dispatch("setMessage", {
+      snackbarType: "success",
+      message: "正常に削除しました"
+    });
   }
 }
 export default User;
