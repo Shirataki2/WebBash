@@ -4,14 +4,7 @@
       <v-container>
         <v-row>
           <SideBar />
-          <v-col
-            cols="12"
-            sm="10"
-            md="8"
-            lg="8"
-            xl="9"
-            style="height: 100%; border-left: 1px solid #777; border-right: 1px solid #777"
-          >
+          <v-col cols="12" sm="10" md="8" lg="8" xl="9" style="height: 100%">
             <transition-group name="slide" tag="p">
               <div v-for="(post, index) in posts" :key="post.id">
                 <div
@@ -195,7 +188,7 @@ class TimeLine extends Vue {
 export default TimeLine;
 </script>
 
-<style scoped>
+<style>
 .slide-enter-active {
   animation: slide-in 0.7s;
 }

@@ -24,11 +24,6 @@ const routes: Array<RouteConfig> = [
     component: Post
   },
   {
-    path: '/user/me',
-    name: 'Me',
-    component: User
-  },
-  {
     path: '/user/:user_id',
     name: 'User',
     component: User

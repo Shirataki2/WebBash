@@ -4,14 +4,7 @@
       <v-container>
         <v-row>
           <SideBar />
-          <v-col
-            cols="12"
-            sm="10"
-            md="8"
-            lg="8"
-            xl="9"
-            style="height: 100%; border-left: 1px solid #777; border-right: 1px solid #777"
-          >
+          <v-col cols="12" sm="10" md="8" lg="8" xl="9" style="height: 100%">
             <span class="title" style="cursor: pointer" @click="$router.back()">
               <v-icon class="mr-5 mb-1">
                 mdi-arrow-left
@@ -240,7 +233,7 @@ class Post extends Vue {
 export default Post;
 </script>
 
-<style scoped>
+<style>
 .fade-enter-active {
   animation: fade-in 0.7s;
 }

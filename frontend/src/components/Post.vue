@@ -19,9 +19,18 @@
       >
         {{ post.owner.username || "" }}
         <span class="ml-2 mr-4 subtitle-2">&#x2027;</span>
-        <span class="subtitle-2 font-weight-light grey--text">
-          {{ post.post_at ? parseDate(post.post_at) : "" }}
-        </span>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <span
+              class="subtitle-2 font-weight-light grey--text"
+              v-bind="attrs"
+              v-on="on"
+            >
+              {{ post.post_at ? parseDate(post.post_at) : "" }}
+            </span>
+          </template>
+          <span>{{ postAt }}</span>
+        </v-tooltip>
       </span>
       <v-spacer />
       <span v-if="post.owner.id === $store.state.userId">
@@ -66,7 +75,7 @@
 <script lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Vue, Component, Prop } from "vue-property-decorator";
-import parseDate from "@/utils/parseDate";
+import parseDate, { formatDate } from "@/utils/parseDate";
 import ImageViewer from "@/components/ImageViewer.vue";
 import Confirm from "@/components/Confirm.vue";
 
@@ -83,6 +92,14 @@ class Post extends Vue {
 
   @Prop({ type: Function, required: true })
   onDelete!: (post: object) => void;
+
+  get postAt() {
+    try {
+      return formatDate(this.post.post_at);
+    } catch {
+      return "hoge";
+    }
+  }
 
   parseDate(date: string) {
     return parseDate(date);

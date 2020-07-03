@@ -1,5 +1,6 @@
 from typing import List, Optional, Any, ForwardRef
 from pydantic import BaseModel
+from fastapi import UploadFile, Form, File
 from datetime import datetime
 import uuid
 
@@ -54,11 +55,6 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     username: str
     avater_url: str
-
-
-class UserUpdate(UserBase):
-    username: Optional[str]
-    avater_url: Optional[str]
 
 
 class User(UserBase):

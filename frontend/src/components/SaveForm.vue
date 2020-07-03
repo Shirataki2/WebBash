@@ -9,7 +9,7 @@
           <span class="headline">New Post</span>
         </v-card-title>
         <v-card-text>
-          <v-form v-model="valid" ref="form">
+          <v-form v-model="valid" ref="form" @submit.prevent>
             <v-container>
               <v-row>
                 <v-col cols="12">

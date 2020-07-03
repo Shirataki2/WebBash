@@ -120,14 +120,10 @@ def update_token(db: Session, db_user: models.User, refresh_token) -> schemas.To
         os.environ['ACCESS_TOKEN_EXPIRE_MINUTES']))
     db_token.refresh_token_expire_at = datetime.utcnow() + timedelta(minutes=int(
         os.environ['REFRESH_TOKEN_EXPIRE_MINUTES']))
-    print('1', db_token.refresh_token, db_token.access_token_expire_at,
-          db_token.refresh_token_expire_at)
     db.flush()
     db.commit()
-    print('2', db_token.refresh_token, refresh_token)
     db_token = db.query(models.Token).join(models.User).filter(
         models.User.id == models.Token.owner_id).first()
-    print('3', db_token.refresh_token, refresh_token)
 
 
 def verify_access_token(db: Session, access_token) -> Tuple[TokenStatus, Union[Dict[str, Any], None]]:
@@ -166,7 +162,6 @@ def verify_refresh_token(db: Session, access_token, refresh_token) -> Tuple[Toke
     user_id = data['sub']
     token: models.Token = db.query(models.Token).filter(
         models.Token.social_id == user_id).first()
-    print(refresh_token, token.refresh_token)
     if not verify_token(refresh_token, token.refresh_token):
         return TokenStatus.INVALID, None
     now = datetime.utcnow()

@@ -20,4 +20,16 @@ const parseDate = (date: string) => {
     return d;
 }
 
+export const formatDate = (date: string) => {
+    const postAt = new Date(date);
+    const offset = new Date().getTimezoneOffset();
+    const localdate = new Date(postAt.getTime() - offset * 60000);
+    let d = "";
+    if (localdate.getFullYear() !== new Date(Date.now()).getFullYear())
+        d += `${localdate.getFullYear()}年 `;
+    d += `${localdate.getMonth() + 1}月${localdate.getDate()}日 `;
+    d += `${localdate.getHours()}時${localdate.getMinutes()}分${localdate.getSeconds()}秒`
+    return d;
+}
+
 export default parseDate;

@@ -46,7 +46,6 @@ async def auth(request: Request, response: Response, db: Session = Depends(get_d
     if (user := await authenticate_user(token['oauth_token'], token['oauth_token_secret'])):
         access_token = create_access_token(
             user["user_id"], access_token_expire)
-        print(token)
         if (db_user := get_user_by_social_id(db, user['user_id'])):
             update_token(
                 db, db_user, access_token['refresh_token']
