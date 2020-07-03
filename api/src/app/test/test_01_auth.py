@@ -102,9 +102,8 @@ def test_get_users(access_token):
 
 
 def test_update_user(access_token):
-    resp = client.put('/users/me', json={
+    resp = client.put('/users/me', data={
         "username": "GSGSGS",
-        "avater_url": "HOGEEEEE"
     }, headers={
         "access-token": access_token['access_token']
     })
@@ -156,7 +155,7 @@ def test_refresh_token(access_token):
         "access_token": access_token['access_token'],
         "refresh_token": access_token['refresh_token'],
     })
-    assert resp.status_code == 200
+    assert resp.status_code == 204
     resp = client.post('/token/refresh', data={
         "access_token": access_token['access_token'],
         "refresh_token": access_token['refresh_token'][:-1],

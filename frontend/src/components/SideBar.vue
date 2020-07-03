@@ -48,11 +48,18 @@
             >
           </v-list-item-content>
         </v-list-item>
-        <v-list-item>
+        <v-list-item
+          @click="
+            $router.push('/user/me').catch(() => {
+              $vuetify.goTo(0, {
+                duration: 1000,
+                easing: 'easeInOutCubic'
+              });
+            })
+          "
+        >
           <v-list-item-icon>
-            <v-badge content="開発中">
-              <v-icon class="sidebar">mdi-account</v-icon>
-            </v-badge>
+            <v-icon class="sidebar">mdi-account</v-icon>
           </v-list-item-icon>
           <v-list-item-content class="hidden-sm-and-down">
             <v-list-item-title class="sidebar">ユーザー</v-list-item-title>

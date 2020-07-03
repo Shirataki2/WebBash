@@ -75,13 +75,17 @@ async def refresh(
             update_token(
                 db, db_user, token['refresh_token']
             )
-            response.set_cookie("access_token", token['access_token'])
-            response.set_cookie("refresh_token", token['refresh_token'])
+            response.set_cookie(
+                "access_token", token['access_token'], max_age=14*60*60*24)
+            response.set_cookie(
+                "refresh_token", token['refresh_token'], max_age=14*60*60*24)
             response.set_cookie(
                 "access_token_expire",
-                (token['expires_in'] + datetime.now().timestamp()) * 1000
+                (token['expires_in'] + datetime.now().timestamp()) * 1000,
+                max_age=14*60*60*24
             )
-            return token
+            response.status_code = 204
+            return response
         else:
             raise exceptions.UserNotFoundException()
     elif status == TokenStatus.EXPIRED:

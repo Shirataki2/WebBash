@@ -69,6 +69,10 @@
         </template>
         <v-list class="body-1">
           <template v-if="$store.state.isLogin">
+            <v-list-item @click="$router.push('/user/me')">
+              <v-list-item-title>User Page</v-list-item-title>
+            </v-list-item>
+            <v-divider />
             <v-list-item @click="logout">
               <v-list-item-title>Logout</v-list-item-title>
             </v-list-item>
@@ -80,59 +84,60 @@
           </template>
         </v-list>
       </v-menu>
-      <v-dialog v-model="historyDialog" max-width="700px" scrollable>
-        <template v-slot:activator="{ on }">
-          <v-btn icon v-if="$route.path === '/'" large v-on="on">
-            <v-icon>
-              mdi-history
-            </v-icon>
-          </v-btn>
-        </template>
-        <v-card>
-          <v-card-title>History (最新100件)</v-card-title>
-          <v-divider></v-divider>
-          <v-card-text class="pt-4">
-            <div v-if="reversedHistory.length > 0">
-              <v-textarea
-                readonly
-                outlined
-                filled
-                :rows="2"
-                dense
-                class="pt-n3 mb-n6 pl-9 mr-9"
-                v-for="(pastCode, i) in reversedHistory"
-                :key="i"
-                :value="pastCode"
-                @click="onHistoryClick(pastCode)"
-              />
-            </div>
-            <div v-else>
-              <h4 style="text-align: center">No history</h4>
-            </div>
-          </v-card-text>
-          <v-divider></v-divider>
-          <v-card-actions>
-            <v-btn color="primary" text @click="historyDialog = false"
-              >Close</v-btn
-            >
-            <v-spacer />
-            <v-btn color="error" text @click="deleteHistory">Clear</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-      <v-btn
-        v-if="$route.path === '/'"
-        icon
-        large
-        target="_blank"
-        :href="
-          `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-            code
-          )}&hashtags=${encodeURIComponent('シェル芸')}`
-        "
-      >
-        <v-icon>mdi-twitter</v-icon>
-      </v-btn>
+      <div v-if="$route.path === '/'">
+        <v-dialog v-model="historyDialog" max-width="700px" scrollable>
+          <template v-slot:activator="{ on }">
+            <v-btn icon large v-on="on">
+              <v-icon>
+                mdi-history
+              </v-icon>
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title>History (最新100件)</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text class="pt-4">
+              <div v-if="reversedHistory.length > 0">
+                <v-textarea
+                  readonly
+                  outlined
+                  filled
+                  :rows="2"
+                  dense
+                  class="pt-n3 mb-n6 pl-9 mr-9"
+                  v-for="(pastCode, i) in reversedHistory"
+                  :key="i"
+                  :value="pastCode"
+                  @click="onHistoryClick(pastCode)"
+                />
+              </div>
+              <div v-else>
+                <h4 style="text-align: center">No history</h4>
+              </div>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-btn color="primary" text @click="historyDialog = false"
+                >Close</v-btn
+              >
+              <v-spacer />
+              <v-btn color="error" text @click="deleteHistory">Clear</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-btn
+          icon
+          large
+          target="_blank"
+          :href="
+            `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+              code
+            )}&hashtags=${encodeURIComponent('シェル芸')}`
+          "
+        >
+          <v-icon>mdi-twitter</v-icon>
+        </v-btn>
+      </div>
       <v-dialog v-model="helpDialog" scrollable max-width="1000px">
         <template v-slot:activator="{ on }">
           <v-btn icon large class="hidden-xs-only" v-on="on">
@@ -205,11 +210,18 @@
                 >
               </v-list-item-content>
             </v-list-item>
-            <v-list-item>
+            <v-list-item
+              @click="
+                $router.push('/user/me').catch(() => {
+                  $vuetify.goTo(0, {
+                    duration: 1000,
+                    easing: 'easeInOutCubic'
+                  });
+                })
+              "
+            >
               <v-list-item-icon>
-                <v-badge content="開発中">
-                  <v-icon class="sidebar">mdi-account</v-icon>
-                </v-badge>
+                <v-icon class="sidebar">mdi-account</v-icon>
               </v-list-item-icon>
               <v-list-item-content class="hidden-sm-and-up">
                 <v-list-item-title class="sidebar">ユーザー</v-list-item-title>

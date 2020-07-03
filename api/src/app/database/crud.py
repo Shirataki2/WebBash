@@ -48,16 +48,19 @@ def create_post(db: Session, user: schemas.User, post: schemas.PostCreate):
                           main=post.main, owner_id=user.id, stdout=post.stdout,
                           stderr=post.stderr, exitcode=post.exitcode)
     db.add(db_post)
+    db.flush()
     db.commit()
     db.refresh(db_post)
     for img in post.posted_images:
         db_image = models.PostedImage(url=img, post_id=db_post.id)
         db.add(db_image)
+        db.flush()
         db.commit()
         db.refresh(db_image)
     for img in post.generated_images:
         db_image = models.GeneratedImage(url=img, post_id=db_post.id)
         db.add(db_image)
+        db.flush()
         db.commit()
         db.refresh(db_image)
     return db_post
@@ -66,6 +69,7 @@ def create_post(db: Session, user: schemas.User, post: schemas.PostCreate):
 def create_user(db: Session, user: schemas.UserCreate) -> schemas.User:  # pragma: no cover
     db_user = models.User(username=user.username, avater_url=user.avater_url)
     db.add(db_user)
+    db.flush()
     db.commit()
     db.refresh(db_user)
     return db_user
@@ -102,6 +106,7 @@ def create_token(db: Session, token: schemas.TokenCreate, owner_id: uuid.UUID) -
         owner_id=owner_id
     )
     db.add(db_token)
+    db.flush()
     db.commit()
     db.refresh(db_token)
     return db_token
@@ -109,13 +114,16 @@ def create_token(db: Session, token: schemas.TokenCreate, owner_id: uuid.UUID) -
 
 def update_token(db: Session, db_user: models.User, refresh_token) -> schemas.Token:
     db_token = db.query(models.Token).join(models.User).filter(
-        models.User.id == models.Token.owner_id).first()
+        models.User.id == db_user.id).first()
     db_token.refresh_token = hash_token(refresh_token)
     db_token.access_token_expire_at = datetime.utcnow() + timedelta(minutes=int(
         os.environ['ACCESS_TOKEN_EXPIRE_MINUTES']))
     db_token.refresh_token_expire_at = datetime.utcnow() + timedelta(minutes=int(
         os.environ['REFRESH_TOKEN_EXPIRE_MINUTES']))
+    db.flush()
     db.commit()
+    db_token = db.query(models.Token).join(models.User).filter(
+        models.User.id == models.Token.owner_id).first()
 
 
 def verify_access_token(db: Session, access_token) -> Tuple[TokenStatus, Union[Dict[str, Any], None]]:
