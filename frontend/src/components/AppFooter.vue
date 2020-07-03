@@ -1,7 +1,7 @@
 <template>
   <v-footer fixed>
     <v-col class="text-center ma-n2" style="font-size: 0.8em" padless cols="12">
-      Version 2.1.9 | &copy; {{ new Date().getFullYear() }} —
+      Version 2.2.0 | &copy; {{ new Date().getFullYear() }} —
       <strong>FF </strong
       ><a target="_blank" href="https://twitter.com/fujifog">@fujifog</a>
       <br />

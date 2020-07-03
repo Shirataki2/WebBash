@@ -46,7 +46,6 @@ async def auth(request: Request, response: Response, db: Session = Depends(get_d
     if (user := await authenticate_user(token['oauth_token'], token['oauth_token_secret'])):
         access_token = create_access_token(
             user["user_id"], access_token_expire)
-        print(token)
         if (db_user := get_user_by_social_id(db, user['user_id'])):
             update_token(
                 db, db_user, access_token['refresh_token']
@@ -63,11 +62,14 @@ async def auth(request: Request, response: Response, db: Session = Depends(get_d
             response = RedirectResponse('http://192.168.10.19:4040')
         else:
             response = RedirectResponse('/')
-        response.set_cookie("access_token", access_token['access_token'])
-        response.set_cookie("refresh_token", access_token['refresh_token'])
+        response.set_cookie(
+            "access_token", access_token['access_token'], max_age=14*60*60*24)
+        response.set_cookie(
+            "refresh_token", access_token['refresh_token'], max_age=14*60*60*24)
         response.set_cookie(
             "access_token_expire",
-            (access_token['expires_in'] + datetime.now().timestamp()) * 1000
+            (access_token['expires_in'] + datetime.now().timestamp()) * 1000,
+            max_age=14*60*60*24
         )
         return response
     else:

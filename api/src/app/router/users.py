@@ -1,9 +1,12 @@
 from starlette.requests import Request
-from fastapi import APIRouter, HTTPException, Depends, Body, Form, Query, Cookie, Path
+from fastapi import APIRouter, HTTPException, Depends, Body, Form, Query, Cookie, Path, File, UploadFile
 from aiohttp import ClientSession
 from datetime import timedelta
 from sqlalchemy.orm import Session
-from typing import List
+import shutil
+import secrets
+import aiofiles
+from typing import List, Optional
 from app import exceptions
 from app.database.crud import (
     create_token,
@@ -22,6 +25,7 @@ from app.database.crud import (
 from app.database.base import get_db
 from app.database import schemas, models
 from app.auth.oauth import oauth, authenticate_user, create_access_token
+from app.conf import docker_prepare_conf, fastapi_config
 import os
 import uuid
 
@@ -34,22 +38,30 @@ async def my_account(
     user: schemas.User = Depends(current_user)
 ):
     user = get_user(db, user.id)
-    print(user.posts)
     return user
 
 
 @router.put('/me', status_code=204)
 async def update_my_account(
     db: Session = Depends(get_db),
-    config: schemas.UserUpdate = Body(None),
+    username: str = Form(...),
+    avater: Optional[UploadFile] = File(None),
     user: schemas.User = Depends(current_user)
 ):
     curr = get_user(db, user.id)
-    if config.username:
-        curr.username = config.username
-    if config.avater_url:
-        curr.avater_url = config.avater_url
+    curr.username = username
+    if avater:
+        curr.avater_url = await upload_image(avater)
+    db.flush()
     db.commit()
+
+
+async def upload_image(file):
+    ext = os.path.splitext(file.filename)[1]
+    fp = f'/images/{secrets.token_hex(24)}{ext}'
+    async with aiofiles.open(fp, 'wb') as f:
+        await f.write(await file.read())
+    return (fastapi_config['openapi_prefix'] + fp).replace('//', '/')
 
 
 @router.get('/me/posts', response_model=List[schemas.Post])
@@ -87,6 +99,7 @@ def delete_my_post(
             raise exceptions.ForbiddenAccessException()
         db.query(models.Post).filter(
             models.Post.id == post_id).delete()
+        db.flush()
         db.commit()
     else:
         raise exceptions.PostNotFoundException()

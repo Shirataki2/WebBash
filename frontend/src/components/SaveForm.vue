@@ -9,7 +9,7 @@
           <span class="headline">New Post</span>
         </v-card-title>
         <v-card-text>
-          <v-form v-model="valid" ref="form">
+          <v-form v-model="valid" ref="form" @submit.prevent>
             <v-container>
               <v-row>
                 <v-col cols="12">
@@ -106,13 +106,21 @@ class SaveForm extends Vue {
           }
         }
       );
-    } finally {
+      this.$store.dispatch("setMessage", {
+        snackbarType: "success",
+        message: "投稿しました"
+      });
       this.title = "";
       this.description = "";
       this.saveDialog = false;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const form: any = this.$refs.form;
       form.resetValidation();
+    } catch {
+      this.$store.dispatch("setMessage", {
+        snackbarType: "error",
+        message: "投稿に失敗しました"
+      });
     }
   }
 
