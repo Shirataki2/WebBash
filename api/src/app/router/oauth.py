@@ -63,11 +63,14 @@ async def auth(request: Request, response: Response, db: Session = Depends(get_d
             response = RedirectResponse('http://192.168.10.19:4040')
         else:
             response = RedirectResponse('/')
-        response.set_cookie("access_token", access_token['access_token'])
-        response.set_cookie("refresh_token", access_token['refresh_token'])
+        response.set_cookie(
+            "access_token", access_token['access_token'], max_age=14*60*60*24)
+        response.set_cookie(
+            "refresh_token", access_token['refresh_token'], max_age=14*60*60*24)
         response.set_cookie(
             "access_token_expire",
-            (access_token['expires_in'] + datetime.now().timestamp()) * 1000
+            (access_token['expires_in'] + datetime.now().timestamp()) * 1000,
+            max_age=14*60*60*24
         )
         return response
     else:

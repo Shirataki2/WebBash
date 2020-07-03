@@ -49,6 +49,7 @@ async def update_my_account(
         curr.username = config.username
     if config.avater_url:
         curr.avater_url = config.avater_url
+    db.flush()
     db.commit()
 
 
@@ -87,6 +88,7 @@ def delete_my_post(
             raise exceptions.ForbiddenAccessException()
         db.query(models.Post).filter(
             models.Post.id == post_id).delete()
+        db.flush()
         db.commit()
     else:
         raise exceptions.PostNotFoundException()
