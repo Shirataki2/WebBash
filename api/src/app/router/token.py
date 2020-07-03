@@ -84,6 +84,7 @@ async def refresh(
                 (token['expires_in'] + datetime.now().timestamp()) * 1000,
                 max_age=14*60*60*24
             )
+            response.status_code = 204
             return response
         else:
             raise exceptions.UserNotFoundException()
