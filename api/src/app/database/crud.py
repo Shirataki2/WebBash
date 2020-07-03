@@ -114,7 +114,7 @@ def create_token(db: Session, token: schemas.TokenCreate, owner_id: uuid.UUID) -
 
 def update_token(db: Session, db_user: models.User, refresh_token) -> schemas.Token:
     db_token = db.query(models.Token).join(models.User).filter(
-        models.User.id == models.Token.owner_id).first()
+        models.User.id == db_user.id).first()
     db_token.refresh_token = hash_token(refresh_token)
     db_token.access_token_expire_at = datetime.utcnow() + timedelta(minutes=int(
         os.environ['ACCESS_TOKEN_EXPIRE_MINUTES']))
