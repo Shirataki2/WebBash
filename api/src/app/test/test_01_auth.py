@@ -127,6 +127,30 @@ def test_create_post(access_token):
     assert resp.status_code == 204
 
 
+def test_delete_post(access_token):
+    resp = client.post('/posts/', json={
+        'title': 'hoge',
+        'description': 'fuga',
+        'main': 'piyo',
+        'stdout': 'ooo',
+        'stderr': 'ppp',
+        'exitcode': 'kfc',
+        'posted_images': ['a'],
+        'generated_images': ['f'],
+    }, headers={
+        "access-token": access_token['access_token']
+    })
+    assert resp.status_code == 204
+    resp = client.get('/users/me/posts', headers={
+        "access-token": access_token['access_token']
+    })
+    assert resp.status_code == 200
+    resp = client.delete(f'/users/me/posts/{resp.json()[0]["id"]}', headers={
+        "access-token": access_token['access_token']
+    })
+    assert resp.status_code == 204
+
+
 def test_refresh_token(access_token):
     resp = client.post('/token/refresh', data={
         "access_token": access_token['access_token'],

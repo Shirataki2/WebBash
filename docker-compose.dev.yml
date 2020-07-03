@@ -52,3 +52,5 @@ services:
     env_file: ./.env.dev
     volumes:
       - ./mongo_db:/data/db
+  shellgei:
+    image: theoldmoon0602/shellgeibot:latest

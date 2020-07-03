@@ -32,10 +32,6 @@ function debug () {
     echo -e "\033[21;1;4;31;47m$*\033[m\n"
 }
 
-function info () {
-    echo -e "\033[1;34m$*\033[m\n"
-}
-
 function stop () {
     debug "[STOP]"
     run $cmd stop
@@ -69,18 +65,15 @@ function start () {
     debug "[START]"
     case "$1" in
         "dev")
-            debug '[*] Run Services'
             run $cmd 'up -d frontend'
             run $cmd 'up -d mongo'
             run $cmd 'up -d api proxy'
-            debug '[*] Start Debug'
             run $cmd 'exec frontend yarn serve'
             ;;
         "test")
             trap finally EXIT
             function finally {
-                debug '[*] Remove Files'
-                run $cmd 'down'
+                debug '[*] Test Completed!'
             }
             debug "[*] Start Database"
             run $cmd 'up -d mongo postgres'
@@ -89,7 +82,6 @@ function start () {
             run $cmd 'up -d proxy'
             debug '[*] Test Start'
             run $cmd 'run --entrypoint "pytest -v --cov=app --cov-report xml --cov-report term-missing" api'
-            debug '[*] Test Completed!'
             ;;
         "prod")
             debug '[*] Run Database'
