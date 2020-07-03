@@ -95,7 +95,8 @@ class PostedImage(Base):
     id = Column(UUIDType(binary=False), primary_key=True,
                 default=uuid.uuid4, index=True)
     url = Column(String(length=256))
-    post_id = Column(UUIDType(binary=False), ForeignKey("posts.id"))
+    post_id = Column(UUIDType(binary=False), ForeignKey(
+        "posts.id", ondelete="CASCADE"))
     post = relationship("Post", back_populates="posted_images")
 
 
@@ -104,7 +105,8 @@ class GeneratedImage(Base):
     id = Column(UUIDType(binary=False), primary_key=True,
                 default=uuid.uuid4, index=True)
     url = Column(String(length=256))
-    post_id = Column(UUIDType(binary=False), ForeignKey("posts.id"))
+    post_id = Column(UUIDType(binary=False), ForeignKey(
+        "posts.id", ondelete="CASCADE"))
     post = relationship("Post", back_populates="generated_images")
 
 
