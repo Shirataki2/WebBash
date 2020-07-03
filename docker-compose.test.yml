@@ -57,3 +57,5 @@ services:
     env_file:
       - ./.env.test
       - ./.env.test.secret
+  shellgei:
+    image: theoldmoon0602/shellgeibot:latest

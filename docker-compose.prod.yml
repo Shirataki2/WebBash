@@ -58,3 +58,5 @@ services:
       - ./.env.prod.secret
     volumes:
       - ./postgres:/var/lib/postgresql/data
+  shellgei:
+    image: theoldmoon0602/shellgeibot:latest
