@@ -155,7 +155,7 @@ def test_refresh_token(access_token):
         "access_token": access_token['access_token'],
         "refresh_token": access_token['refresh_token'],
     })
-    assert resp.status_code == 200
+    assert resp.status_code == 204
     resp = client.post('/token/refresh', data={
         "access_token": access_token['access_token'],
         "refresh_token": access_token['refresh_token'][:-1],
