@@ -5,10 +5,18 @@
     elevation="0"
   >
     <v-card-title>
-      <v-avatar size="42">
+      <v-avatar
+        size="42"
+        @click="$router.push(`/user/${post.owner.id}`).catch(() => {})"
+        style="cursor: pointer"
+      >
         <img :src="post.owner.avater_url || ''" />
       </v-avatar>
-      <span class="subtitle-1 font-weight-bold ml-2">
+      <span
+        class="subtitle-1 font-weight-bold ml-2"
+        @click="$router.push(`/user/${post.owner.id}`).catch(() => {})"
+        style="cursor: pointer"
+      >
         {{ post.owner.username || "" }}
         <span class="ml-2 mr-4 subtitle-2">&#x2027;</span>
         <span class="subtitle-2 font-weight-light grey--text">
