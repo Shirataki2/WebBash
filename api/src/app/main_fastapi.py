@@ -329,7 +329,7 @@ async def write_source(run_id, code, filename, media=None):
     os.makedirs(f'/tmp/app/{run_id}/media')
     os.makedirs(f'/tmp/app/{run_id}/images')
     async with aiofiles.open(f'/tmp/app/{run_id}/src/{filename.value}', 'w') as f:
-        await f.write(code)
+        await f.write(code.replace('\r', ''))
     fps = []
     if media:  # pragma: no cover
         for i, image in enumerate(media):
