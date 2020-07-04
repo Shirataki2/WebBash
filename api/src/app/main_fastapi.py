@@ -63,7 +63,7 @@ def custom_openapi(openapi_prefix: str):  # pragma: no cover
         return api.openapi_schema
     openapi_schema = get_openapi(
         title="Web Bash API",
-        version="v 2.2.0",
+        version="v 2.2.1",
         openapi_prefix=openapi_prefix,
         description="シェル芸 on API",
         routes=api.routes,
@@ -329,7 +329,7 @@ async def write_source(run_id, code, filename, media=None):
     os.makedirs(f'/tmp/app/{run_id}/media')
     os.makedirs(f'/tmp/app/{run_id}/images')
     async with aiofiles.open(f'/tmp/app/{run_id}/src/{filename.value}', 'w') as f:
-        await f.write(code)
+        await f.write(code.replace('\r', ''))
     fps = []
     if media:  # pragma: no cover
         for i, image in enumerate(media):
